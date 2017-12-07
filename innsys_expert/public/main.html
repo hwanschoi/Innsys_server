@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta name="" content="" charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <title>INNSYS</title>
+
+    <!--<link rel="import" href="head_import.html">
+    <script>
+        function supportsImports() {
+            return 'import' in document.createElement('link');
+        }
+
+        if (supportsImports()) {
+            // 지원하므로 그대로 진행합니다.
+            console.log("Support Browser");
+        } else {
+            // 파일을 로딩하기 위한 다른 라이브러리나 require 시스템들을 사용하세요.
+            console.log("Unsupported Browser");
+        }
+    </script>-->
+
+    <link rel="stylesheet" href="/assets/theme_expert/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="/assets/theme_expert/dist/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="/assets/theme_expert/dist/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="/css/tile_item.css">
+
+    <script src="js/jquery.js"></script>
+    <script src="js/goItemDetailPage.js"></script>
+    <script type="text/javascript" src="../js/util.js"></script>
+
+    <script type="text/javascript" src="../js/logout.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../js/getItemTotalCount.js"></script>
+    <script type="text/javascript" src="../js/makeTileItem.js"></script>
+
+    <!--/////////////////////////////////////////////////////////////////////////////////////////-->
+    <script type="text/javascript">
+        function detailSubmit(dataID) {
+            document.detailForm.action = '/process/detail/getdetail';
+            var elem = document.createElement("input");
+            elem.setAttribute("type", "hidden");
+            elem.setAttribute("name", "dataID");
+            elem.setAttribute("value", dataID);
+            document.detailForm.appendChild(elem);
+            document.detailForm.submit();
+        }
+    </script>
+
+    <script type="text/javascript">
+        // 타일 아이템 클릭시
+        $(document).on('click', '#tile_item_jasehi_bogi', function (e) {
+            $parent = $(this).closest('#tile_item');
+            var dataID = $parent.attr('data-id');
+            detailSubmit(dataID);
+
+            var postData = {
+                pageIdx: dataID
+            }
+        });
+        // $(document).on('click', '#tile_item', function (e) {
+        //     console.log(e);
+
+        //     var dataID = $(this).attr('data-id');
+        //     // alert("DataID:" + dataID);
+        //     detailSubmit(dataID);
+
+        //     var postData = {
+        //         pageIdx: dataID
+        //     }
+        // });
+
+        $(document).on('click', 'ul.pagination li.page_prev', function () {
+            if ($(this).next().is('.active') == true) {
+                alert("Prev 없어없어");
+                return;
+            }
+
+            var pageIdx = $(this).text();
+            var currentPage = $('#id_current_page').val();
+            var prevIdx = parseInt(currentPage) - parseInt(1);
+            console.log('Prev' + prevIdx);
+            changePage_2(Number(prevIdx), false);
+
+            $('li.page_num.active').removeClass('active').prev().addClass('active');
+        });
+
+        $(document).on('click', 'ul.pagination li.page_next', function () {
+            if ($(this).prev().is('.active') == true) {
+                alert("Next 없어없어");
+                return;
+            }
+
+            var pageIdx = $(this).text();
+            var currentPage = $('#id_current_page').val();
+            var nextIdx = parseInt(currentPage) + parseInt(1);
+            console.log('Next' + nextIdx);
+            changePage_2(Number(nextIdx), false);
+
+            $('li.page_num.active').removeClass('active').next().addClass('active');
+        });
+
+        $(document).on('click', 'ul.pagination li.page_num', function () {
+            var pageIdx = $(this).text();
+            console.log('main.html(pageIndex:' + pageIdx + ')');
+
+            if ($(this).hasClass('active') == true) {
+                alert('선택된 놈이다 누르지마!!!');
+            } else {
+                $('ul.pagination li.active').removeClass('active');
+                $(this).addClass('active');
+
+                changePage_2(pageIdx, false);
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+        function clickMyProfileBogi() {
+            alert('click my profile');
+        }
+    </script>
+
+    <script type="text/javascript">
+        // $(document).on('click', '#innsys_title', function (e) {
+        var dataInfo = {
+            id: null,
+            result: null
+        }
+
+        var postData = {
+            pageIdx: '1'
+        }
+
+        //encodeURI 작업이 필요할 수 있음
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            url: '/process/logic/getRequestCounsels',
+            data: postData,
+            cache: false,
+            async: true,
+            success: function (result) {
+                //dataList = JSON.stringify(result);
+                // alert(dataList);
+
+                dataInfo.result = JSON.stringify(result.summaryRequestCounselItems);
+                //alert(dataInfo.result);
+
+                ajaxEx.parseJSON(result.summaryRequestCounselItems)
+            },
+            error: function (request, error) {
+                alert("실패!!!(main)");
+            }
+        });
+        ///////////////////////////////////////////////////////
+
+        var ajaxEx = {
+            parseJSON: function (result) {
+                var keyArray = [];
+                console.log('---------------------Parse Counsel Items(begin)-----------------------');
+                console.log(result);
+                console.log('----------------------Parse Counsel Items(end)----------------------');
+                $('#main_body').empty();
+                var dataList = "";
+
+                // 한줄에 표시할 아이템수
+                var columnPerRow = 3;
+
+                $(result).each(function (i, item) {
+                    //create row
+                    if (i % columnPerRow == 0) {
+                        dataList += '<div class="row">';
+                    }
+
+                    console.log(item.img_thumbnail_path);
+
+                    //////
+                    dataList += '<div id="tile_item" class="col-xs-18 col-sm-6 col-md-3"';
+                    dataList += ' data-id=' + item.id + '>';
+                    dataList += '<div class="thumbnail" id="tile_item_thumb">';
+                    dataList += '<img src="';
+                    dataList += getMeasurePartIcon(item.measure_part) + '">';
+                    dataList += '<div class="caption">';
+                    dataList += '<h4 class="ellipsis" style="text-align: center;">' + checkValidData(
+                        item.title) + '</h4>';
+                    ///
+                    dataList += '<div class="row" style="padding-left: 17px; padding-right: 17px;">';
+                    dataList += '<span class="pull-left"><strong>COMMENTS</strong></span>';
+                    dataList += '<span class="pull-right">' + item.comment_count + '</span>';
+                    dataList += '</div>';
+                    dataList += '<div class="row" style="padding-left: 17px; padding-right: 17px;">';
+                    dataList += '<span class="pull-left"><strong>FACIAL PART</strong></span>';
+                    dataList += '<span class="pull-right">' + item.measure_part + '</span>';
+                    dataList += '</div>';
+                    dataList +=
+                        '<div class="row" style="padding-left: 17px; padding-right: 17px; margin-bottom: 5px;">';
+                    dataList += '<span class="pull-left"><strong>DATE</strong></span>';
+                    dataList += '<span class="pull-right">' + getDateFormat(item.created_at) +
+                        '</span>';
+                    dataList += '</div>';
+                    ///
+                    dataList +=
+                        '<a id="tile_item_jasehi_bogi" href="javascript:void(0)" class="btn btn-primary btn-sm btn-block" role="button">자세히 보기</a>';
+                    dataList += '</div>';
+                    dataList += '</div>';
+                    dataList += '</div>';
+                    //////
+
+                    if (i % columnPerRow == columnPerRow - 1 || i == result.length - 1) {
+                        dataList += "</div>";
+                    }
+                });
+
+                $('#main_body').html(dataList);
+
+                var pageInfo = makePagination(false);
+                $('#id_pagination').html(pageInfo);
+                $('#id_current_page').val(1);
+            }
+        }
+    </script>
+
+    <!--User Info Setting-->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // $imgUserProfileThumb = $('#id_user_profile_thumb');
+            $txtUserProfileName = $('#id_user_profile_name');
+
+            var sendUrl = "/process/users/getuserInfo";
+
+            $.ajax({
+                type: 'post',
+                url: sendUrl,
+                // data: form_data,
+                dataType: 'json',
+                success: function (result) {
+                    var valJson = JSON.stringify(result);
+                    ajaxEx.parseJSON(result.expertInfo);
+                },
+                error: function (request, error) {
+                    alert("실패!!!!!(Get UserProfile)");
+                }
+            });
+
+            var ajaxEx = {
+                parseJSON: function (result) {
+                    // $imgUserProfileThumb.attr('src', '/assets/theme_expert/dist/img/sana.png');
+                    $txtUserProfileName.text('ID : ' + result.email);
+                }
+            }
+        });
+    </script>
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+    <form name="detailForm" role="form" action="" method="get"></form>
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="/" class="logo">
+                <!-- mini logo for sidebar mini 50x50 pixels -->
+                <!--<span class="logo-mini"><b>A</b>LT</span>-->
+                <!-- logo for regular state and mobile devices -->
+                <i class="fa fa-wifi"></i>
+                <span class="logo-lg"><b>INNSYS</b>.com</span>
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <!-- User Account: style can be found in dropdown.less -->
+                        <li class="dropdown user user-menu">
+                            <a id="id_logout" href="javascript:void(0);" class="" data-toggle="button" role="button">
+                                <i class="fa fa-user"></i>
+                                <span class="sr-only">Toggle Logout</span>Sign out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- Sidebar user panel -->
+                <div class="user-panel">
+                    <div class="pull-left image">
+                        <!--<img src="/assets/theme_expert/dist/img/sana.png" id="id_user_profile_thumb" class="img-circle" alt="User Image">-->
+                        <img src="/images/default_login_user_thumb.png" id="id_user_profile_thumb" class="img-circle" alt="User Image">
+                    </div>
+                    <div class="pull-left info">
+                        <p id="id_user_profile_name"></p>
+                        <!--<a href="#"><i class="fa fa-circle text-success"></i> Online</a>-->
+                    </div>
+                </div>
+                <!-- search form -->
+                <form action="#" method="get" class="sidebar-form hidden">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Search...">
+                        <span class="input-group-btn">
+                            <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </form>
+                <!-- /.search form -->
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu" id="id_sidebar_menu">
+                    <!--<li class="header">MAIN</li>-->
+                    <li class="active">
+                        <a href="/">
+                            <i class="fa fa-th-list"></i>
+                            <span> Consultation List</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="upload_test.html">
+                            <i class="fa fa-newspaper-o"></i>
+                            <span> Beauty News</span>
+                            <span class="pull-right-container">
+                                <!--<small class="label pull-right bg-green">
+                                    new
+                                </small>-->
+                            </span>
+                        </a>
+                    </li>
+                    <li class="treeview" id="id_treeview">
+                        <a href="javascript:void(0)">
+                            <i class="fa fa-vcard-o"></i><span> My Page</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li id="id_my_profile"><a href="/myprofile"><i class="fa fa-bug"></i> 프로필 관리</a></li>
+                            <li id="id_my_geul_bogi"><a href="/mypage"><i class="fa fa-bug"></i> 내가 쓴글 보기</a></li>
+                            <li><a href="empty.html"><i class="fa fa-bug"></i> Three</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <!--<a href="contact.html">-->
+                        <a href="/">
+                            <i class="fa fa-send-o"></i>
+                            <span> Contact</span>
+                            <span class="pull-right-container">
+                                <!--<small class="label pull-right bg-green">
+                                    new
+                                </small>-->
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <h1>
+                    <small></small>
+                </h1>
+                <ol class="breadcrumb">
+                    <li><a href="/"><i class="fa fa-folder-open"></i> Home</a></li>
+                    <li class="active">Consultation List</li>
+                </ol>
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container" id="main_body">
+                    <p>Empty</p>
+                </div>
+
+                <!-- Pagination -->
+                <input type="hidden" id="id_current_page">
+                <div class="row text-center" id="id_pagination"></div>
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+        <footer class="main-footer">
+            <!--<div class="pull-right hidden-xs">
+                <b>made in china  </b>17.04.01
+            </div>-->
+            <strong>Copyright &copy; <a href="http://www.innsys.com/" target="_blank">Innsys Corp</a>.</strong> All rights
+            reserved.
+        </footer>
+    </div>
+
+    <input type="hidden" id="id_item">
+
+    <!--Modal Popup 01-->
+    <div class="modal fade" id="tile_item_detail" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- remote ajax call이 되는영역 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery 2.2.3 -->
+    <script src="assets/theme_expert/plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.6 -->
+    <script src="assets/theme_expert/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Morris.js charts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <!-- daterangepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <!-- Bootstrap WYSIHTML5 -->
+    <script src="assets/theme_expert/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+    <!-- Slimscroll -->
+    <script src="assets/theme_expert/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="assets/theme_expert/dist/js/app.min.js"></script>
+    <script src="assets/theme_expert/dist/js/pages/dashboard.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/modal_item.css" rel="stylesheet">
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+        .carousel-inner .active.left {
+            left: 5%;
+        }
+
+        .carousel-inner .next {
+            left: 33%;
+        }
+
+        .carousel-inner .prev {
+            left: 5%;
+        }
+
+        .carousel-control.left,
+        .carousel-control.right {
+            background-image: none;
+        }
+
+        .item:not(.prev) {
+            visibility: visible;
+        }
+
+        .item.right:not(.prev) {
+            visibility: hidden;
+        }
+
+        .rightest {
+            visibility: visible;
+        }
+
+        th,
+        td {
+            text-align: center;
+        }
+    </style>
+
+    <script>
+        // $('#myCarousel').carousel({
+        //     interval: 40000
+        // });
+
+        $('.carousel .item').each(function () {
+            var next = $(this).next();
+            if (!next.length) {
+                next = $(this).siblings(':first');
+            }
+            next.children(':first-child').clone().appendTo($(this));
+
+            if (next.next().length > 0) {
+
+                next.next().children(':first-child').clone().appendTo($(this)).addClass('rightest');
+
+            } else {
+                $(this).siblings(':first').children(':first-child').clone().appendTo($(this));
+
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#register_dlg').hide();
+            //등록버튼
+            $('#id_senddata').click(function () {
+                var valID = $('#id_item').val();
+                var valTitle = $('#id_register_title').val();
+                var valText = $('#id_register_body').val();
+
+                var sendUrl = "/process/logic/writeCounsel";
+
+                // requestCounselId, title, text
+                var dataInfo = {
+                    requestCounselId: valID,
+                    title: $('#id_register_title').val(),
+                    text: $('#id_register_body').val()
+                }
+
+                // var dataInfo = "requestCounselId=" + valID;
+                // dataInfo += "&title=" + $('#id_register_title').val();
+                // dataInfo += "&text=" + $('#id_register_body').val();
+                console.log(dataInfo);
+
+                $('#id_senddata').click(function () {
+                    $.ajax({
+                        type: 'post',
+                        dataType: 'json',
+                        data: dataInfo,
+                        url: sendUrl,
+                        cache: false,
+                        // async: false,
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        complete: function (result) {
+                            alert("등록이 성공하였습니다.")
+                            // $.modal.close();
+                        },
+                        success: function (result) {
+                            console.log(result);
+                        },
+                        error: function (request, err) {
+                            alert("실패!!!");
+                        }
+                    });
+                });
+            });
+            //
+
+            //$('#main_body').empty();
+
+            // var form_data = {
+            //     test_01: '',
+            //     test_02: '1p'
+            // };
+
+            // var sendUrl = "/process/logic/test";
+
+            // $.ajax({
+            //     type: 'post',
+            //     url: sendUrl,
+            //     data: form_data,
+            //     dataType: 'json',
+            //     success: function (result) {
+            //         var valJson = JSON.stringify(result);
+            //         alert("성공 : " + valJson);
+            //     },
+            //     error: function (request, error) {
+            //         alert("실패!!!!!");
+            //     }
+            // });
+            // var val = $('#id_item').val();
+            // alert(val);
+            // alert("777");
+
+        });
+    </script>
+    <script>
+        $('#id_json').empty();
+        var valID = $('#id_item').val();
+        
+        var dataInfo = {
+            id: null,
+            result: null
+        }
+
+        var sendUrl = "/process/logic/getDetailRequestCounselItem?id=";
+        sendUrl += valID;
+        console.log(sendUrl);
+
+        $.ajax({
+            type: 'get',
+            url: sendUrl,
+            // data: form_data,
+            dataType: 'json',
+            success: function (result) {
+                var valJson = JSON.stringify(result);
+                ajaxEx.parseJSON(result.requestCounselItem);
+                alert("성공(id:" + valID + ")\n" + valJson);
+            },
+            error: function (request, error) {
+                alert("실패!!!!!");
+            }
+        });
+
+        var ajaxEx = {
+            parseJSON: function (result) {
+                var data = "";
+                $(result).each(function (i, item) {
+                    //analyze_id, age, sex, measure_part, img_thumbnail_path,
+                    //img_attach_path, img_ir_path, img_white_path, text
+                    //updated_at, created_at, title, nickname, name,
+                    //user_id, id, _id
+                    data += '<div class="row">';
+                    data += '<div class="col-sm-4">  별명  :  ' + item.nickname + '</div>';
+                    data += '<div class="col-sm-4">  나이  :  ' + item.age + '</div>';
+                    data += '</div>';
+                    data += '<div class="row">';
+                    data += '<div class="col-sm-4">  측정부위  :  ' + item.measure_part + '</div>';
+                    data += '<div class="col-sm-4">  성별  :  ' + item.sex + '</div>';
+                    data += '</div>';
+                    data += '<div class="row">';
+                    data += '<div class="col-sm-4">  제목  :  ' + item.title + '</div>';
+                    data += '</div>';
+                });
+
+                // alert(data);
+                $('#id_json').html(data);
+                // $('#id_footer').html(data);
+            }
+        }
+    </script>
+    <!--등록글 리스트-->
+    <script>
+        $('#id_tableBody').empty();
+        var valID = $('#id_item').val();
+
+        var sendUrl = "/process/logic/getCounsels?requestCounselId=";
+        sendUrl += valID;
+        console.log(sendUrl);
+
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: sendUrl,
+            cache: false,
+            // async: true,
+            success: function (result) {
+                var j = JSON.stringify(result.CounselItems);
+                if (j.length == 0) {
+                    alert("asdfasdf");
+                }
+                ajaxEx2.parseJSON2(result.CounselItems);
+            },
+            error: function (request, err) {
+                alert(err.toString());
+            }
+        });
+
+        var ajaxEx2 = {
+            parseJSON2: function (result) {
+                var data = "";
+                $(result).each(function (i, item) {
+                    data += '<tr>';
+                    data += '<td>' + i + '</td>'
+                    data += '<td>' + item.expert_nick + '</td>'
+                    data += '<td>' + item.title + '</td>'
+                    data += '<td>' + item.created_at + '</td>'
+                    data += '<td><button>수정</button></td>'
+                    data += '</tr>';
+                });
+
+                // alert(data);
+                $('#id_tableBody').html(data);
+                // $('#id_footer').html(data);
+            }
+        }
+    </script>
+    <!--등ㄹ록글 리스트 END-->
+    <script>
+        $(function () {
+            $('#id_register').click(function () {
+                //$('#id_modalbody').hide();
+                $('#id_777').hide();
+                $('#id_register').hide();
+                $('#register_dlg').show();
+            });
+        });
+    </script>
+    <script>
+        $(document).hide(function () {
+            $('#id_777').show();
+            $('#id_register').hide();
+            $('#register_dlg').hide();
+        });
+    </script>
+    <script>
+        // $(function () {
+        //     var sendUrl = "";
+        //     sendUrl = '';
+
+        //     var valID = $('#id_item').val();
+
+        //     var sendUrl = "/process/logic/test3?id=";
+        //     sendUrl += valID;
+
+        //     $('#id_senddata').click(function () {
+        //         alert(sendUrl);
+        //         // $.ajax({
+        //         //     type: 'get',
+        //         //     dataType: 'json',
+        //         //     // data: '',
+        //         //     url: sendUrl,
+        //         //     cache: false,
+        //         //     async: true,
+        //         //     success: function (result) {
+        //         //         var j = JSON.stringify(result);
+        //         //         alert(j);
+        //         //     },
+        //         //     error: function (request, err) {
+        //         //         alert(err.toString());
+        //         //     }
+        //         // });
+        //     });
+        // });
+    </script>
+
+</head>
+
+<body>
+    <!--multi item-->
+    <!--multi item end-->
+    <!--slider-->
+    <div class="container hidden">
+        <div class="col-md-5">
+
+        </div>
+    </div>
+    <!--slider end-->
+
+    <!---->
+    <div class="modal-header">
+        <!--<button type="button" class="close" data-dimiss="modal">&times;</button>-->
+        <h4 class="modal-title">Counsel Item</h4>
+    </div>
+    <div class="modal-body" id="id_modalbody">
+        <div id="id_777">
+            <div class="" id="id_json">
+            </div>
+            <div class="carousel slide" id="myCarousel">
+                <div class="carousel-inner">
+                    <div class="item active">
+                        <div class="col-sm-8 col-md-4">
+                            <a href="#"><img src="https://scontent-hkg3-1.cdninstagram.com/t51.2885-15/e35/17494763_246198082509673_5539361592442880000_n.jpg"
+                                    class="img-responsive">1</a>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="col-sm-8 col-md-4">
+                            <a href="#"><img src="https://scontent-hkg3-1.cdninstagram.com/t51.2885-15/e35/17265461_222043178263508_5096557306108182528_n.jpg"
+                                    class="img-responsive">2</a>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="col-sm-8 col-md-4">
+                            <a href="#"><img src="https://scontent-hkg3-1.cdninstagram.com/t51.2885-15/e35/13643621_1235872366436707_1833747492_n.jpg"
+                                    class="img-responsive">3</a>
+                        </div>
+                    </div>
+                </div>
+                <!--<a class="left carousel-control" href="#myCarousel" data-slide="prev"><i class="glyphicon glyphicon-chevron-left"></i></a>
+                <a class="right carousel-control" href="#myCarousel" data-slide="next"><i class="glyphicon glyphicon-chevron-right"></i></a>-->
+            </div>
+
+            <textarea id="id_text" class="form-control" rows="5" id="comment" readonly="readonly" style="resize: none"></textarea></td>
+
+            <table class="table table-fixed">
+                <thead class="thead-inverse">
+                    <tr>
+                        <th>#</th>
+                        <th>자문가</th>
+                        <th>제목</th>
+                        <th>자문일자</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="id_tableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="container" id="register_dlg" style="width: 100%">
+        <table class="table table-bordered" style="width: 100%">
+            <thead>
+                <caption> 글쓰기 </caption>
+            </thead>
+            <tbody style="width: 100%">
+                <form action="write_ok.jsp" method="post" encType="multiplart/form-data" style="width: 100%">
+                    <tr>
+                        <th>제 목</th>
+                        <td><input id="id_register_title" type="text" placeholder="제목을 입력하세요. " name="subject" class="form-control"
+                            /></td>
+                    </tr>
+                    <tr>
+                        <th>내 용</th>
+                        <td><textarea id="id_register_body" class="form-control" rows="5" id="comment" placeholder="내용을 입력하세요. "
+                                style="resize: none"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th>첨부파일: </th>
+                        <td><input type="text" placeholder="파일을 선택하세요. " name="filename" class="form-control" /></td>
+                    </tr>
+                    <!--<tr>
+                        <th>비밀번호: </th>
+                        <td><input type="password" placeholder="비밀번호를 입력하세요" class="form-control" /></td>
+                    </tr>-->
+                    <tr>
+                        <td colspan="2">
+                            <!--<button type="button" class="btn btn-default" id="id_senddata">등록</button>-->
+                            <button type="button" class="btn btn-default" id="id_senddata">등록</button>
+                            <!--<input type="button" value="등록" id="id_senddata" class="pull-right" />-->
+                            <!--<input type="button" value="reset" class="pull-left" />-->
+                            <!--<input type="button" value="글 목록으로... " class="pull-right" onclick="javascript:location.href='list.jsp'" />-->
+                            <!-- <a class="btn btn-default" onclick="sendData()"> 등록 </a>
+                    <a class="btn btn-default" type="reset"> reset </a>
+                    <a class="btn btn-default" onclick="javascript:location.href='list.jsp'">글 목록으로...</a> -->
+                        </td>
+                    </tr>
+                </form>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-footer" id="id_footer">
+        <button type="button" class="btn btn-default" id="id_register">등록</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+    </div>
+</body>
+
+</html>

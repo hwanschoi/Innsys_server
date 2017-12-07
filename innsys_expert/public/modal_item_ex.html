@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css/modal_item.css" rel="stylesheet">
+
+    <!---->
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="js/editor.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#id_register_body").Editor();
+        });
+    </script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link href="css/editor.css" type="text/css" rel="stylesheet" />-->
+    <!---->
+    <script src="js/editor.js"></script>
+
+    <link href="css/editor.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <script src="js/update_jamoon_list.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#id_register_body").Editor();
+        });
+    </script>
+
+
+    <script src="js/senddata_modify.js"></script>
+    <script src="js/util.js"></script>
+
+    <script>
+        function sendData() {
+            if ($('#id_senddata').text() == "수정") {
+                modifyData();
+                return;
+            }
+
+            var valID = $('#id_item').val();
+            var valTitle = $('#id_register_title').val();
+            // var valText = $('#id_register_body').val();
+            var valText = $('#id_register_body').Editor('getText');
+
+            if (valTitle.length == 0) {
+                alert("제목을 입력해주세요");
+                return;
+            }
+
+            if (valText.length == 0) {
+                alert("내용을 입력해주세요");
+                return;
+            }
+
+            console.log(valText);
+
+            var sendUrl = "/process/logic/writeCounsel";
+
+            // requestCounselId, title, text
+            var dataInfo = {
+                requestCounselId: valID,
+                title: $('#id_register_title').val(),
+                // text: $('#id_register_body').val()
+                text: $('#id_register_body').Editor('getText')
+            }
+
+            console.log(dataInfo);
+
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                data: dataInfo,
+                url: sendUrl,
+                cache: false,
+                // async: false,
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                complete: function (result) {
+                    alert("등록이 성공하였습니다.")
+                    // $.modal.close();
+                    // updateJamoonList();
+                },
+                success: function (result) {
+                    console.log(result);
+
+                    updateJamoonList();
+                    $('#id_modal_body').show();
+                    $('#id_register').show();
+                    $('#register_dlg').hide();
+                },
+                error: function (request, err) {
+                    alert("실패!!!");
+                }
+            });
+        }
+    </script>
+
+    <script>
+        function delData() {
+            alert("delte data");
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#register_dlg').hide();
+        });
+    </script>
+
+    <script type="text/javascript">
+        $('#id_1st').empty();
+        var valID = $('#id_item').val();
+
+        var dataInfo = {
+            id: null,
+            result: null
+        }
+
+        var sendUrl = "/process/logic/getDetailRequestCounselItem?id=";
+        sendUrl += valID;
+        console.log(sendUrl);
+
+        $.ajax({
+            type: 'get',
+            url: sendUrl,
+            // data: form_data,
+            dataType: 'json',
+            success: function (result) {
+                var valJson = JSON.stringify(result);
+                ajaxEx.parseJSON(result.requestCounselItem);
+                // alert("성공(id:" + valID + ")\n");
+                // console.log(valJson);
+            },
+            error: function (request, error) {
+                alert("실패!!!!!");
+            }
+        });
+
+        var ajaxEx = {
+            parseJSON: function (result) {
+                var data = "";
+                $(result).each(function (i, item) {
+                    //analyze_id, age, sex, measure_part, img_thumbnail_path,
+                    //img_attach_path, img_ir_path, img_white_path, text
+                    //updated_at, created_at, title, nickname, name,
+                    //user_id, id, _id
+
+                    //set title
+                    console.log(getUseTitle(item.title));
+                    $('#id_modal_title').text(getUseTitle(item.title));
+
+                    $('#id_userID').val(item.user_id);
+
+                    // data += '<table class="table table_detail">';
+                    data += '<table class="table_detail">';
+                    data += '<tbody>';
+                    data += '<tr>';
+                    data += '<td class="td_detail" align="center" rowspan="2">';
+                    data +=
+                        '<img align="center" id="id_profile_thumb" class="img-responsive" alt="img_profile"';
+                    data += 'src=' + checkMeasurePartThumb(item.img_thumbnail_path) + '>';
+                    data += '</td>';
+                    data += '<td class="td_detail" rowspan="2">';
+                    data += '<p class="detail_info">별명<br/>';
+                    data += '나이<br/>';
+                    data += '측정부위<br/>';
+                    data += '성별<br/></p>';
+                    data += '</td>';
+                    data += '<td class="td_detail" rowspan="2">';
+                    data += '<p class="detail_info_body">' + item.nickname + '<br/>';
+                    data += item.age + '<br/>';
+                    data += item.measure_part + '<br/>';
+                    data += getSexManWoman(item.sex) + '<br/></p>';
+                    data += '</td>';
+                    data += '<td class="td_detail" align="center">';
+                    data += '<a id="measure_thumb" href="javascript:popupImgView(' + item.img_uv_path +
+                        ')">';
+                    data += '<img id="id_measure_thumb" alt="img_uv" src=' +
+                        checkMeasurePartThumb(item.img_uv_path) +
+                        ' class="img-responsive"></a>';
+                    data += '</td>';
+                    data += '<td class="td_detail" align="center">';
+                    data +=
+                        '<a id="measure_thumb" href="#"><img id="id_measure_thumb" alt="img_ir" src=' +
+                        checkMeasurePartThumb(item.img_ir_path) +
+                        ' class="img-responsive"></a>';
+                    data += '</td>';
+                    data += '<td class="td_detail" align="center">';
+                    data +=
+                        '<a id="measure_thumb" href="#"><img id="id_measure_thumb" alt="img_white" src=' +
+                        checkMeasurePartThumb(item.img_white_path) +
+                        ' class="img-responsive"></a>';
+                    data += '</td>';
+                    data += '<td class="td_detail" align="center">';
+                    data +=
+                        '<a id="measure_thumb" href="#"><img id="id_measure_thumb" alt="attach" src=' +
+                        checkMeasurePartThumb(item.img_attach_path) +
+                        ' class="img-responsive"></a>';
+                    data += '</td>';
+                    data += '</tr>'
+                    data += '<tr>';
+                    data += '<td class="td_detail" colspan="2" align="center">';
+                    data += '<a id="id_register" class="btn btn-default" style="width: 90%">등록</a>';
+                    data += '</td>';
+                    data += '<td class="td_detail" colspan="2" align="center">';
+                    data += '<a class="btn btn-default" style="width: 90%">분석결과</a>';
+                    data += '</td>';
+                    data += '</tr>';
+                    data += '</tbody>';
+                    data += '</table>';
+
+                    // 2nd text
+                    $('#id_text').val(item.text);
+                });
+
+                $('#id_1st').html(data);
+            }
+        }
+    </script>
+
+    <!--등록글 리스트-->
+    <script type="text/javascript">
+        $('#id_tableBody').empty();
+        var valID = $('#id_item').val();
+
+        var sendUrl = "/process/logic/getCounsels?requestCounselId=";
+        sendUrl += valID;
+        console.log(sendUrl);
+
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: sendUrl,
+            cache: false,
+            // async: true,
+            success: function (result) {
+                var j = JSON.stringify(result.CounselItems);
+                if (j.length == 0) {
+                    alert("CounselItems:0");
+                }
+                ajaxEx2.parseJSON2(result.CounselItems);
+            },
+            error: function (request, err) {
+                console.log('Interface:getCounsels Error:' + err.toString());
+                //등록된 자문이 없습니다.
+                var data = "<tr>";
+                data += '<td colspan="4">';
+                data += '<h4 align="center">등록된 자문이 없습니다</h4>';
+                data += '</td>';
+                data += '</tr>';
+                $('#id_tableBody').html(data);
+            }
+        });
+
+        var ajaxEx2 = {
+            parseJSON2: function (result) {
+                var data = "";
+                $(result).each(function (i, item) {
+                    var index = parseInt(i) + parseInt(1);
+                    data += '<tr data-id=' + item.id + '>';
+                    data += '<td id="id_index">' + index + '</td>';
+                    data += '<td id="id_nick">' + item.expert_nick + '</td>';
+                    data += '<td id="id_title"><a id="id_title_link" href="#">' +
+                        item.title +
+                        '</a></td>';
+                    //data += '<td>' + item.created_at + '</td>';
+                    //data += '<td id="id_created_at">' + item.created_at + '</td>';
+                    data += '<td id="id_created_at">' + '2017.04.01' + '</td>';
+                    // data += '<td id="id_created_at">' + item.created_at + '</td>';
+                    //data += '<td id="id_btn_modify" onclick="modifyData()"><button>수정</button></td>';
+                    // data += '<input type="hidden" id="id_text_counsel">';
+                    data += '<td style="display:none" id="id_expert_text" class="">';
+                    data += item.text;
+                    data += '</td>';
+                    data += '</tr>';
+                });
+
+                // alert(data);
+                $('#id_tableBody').html(data);
+                // $('#id_text_counsel').val(item.text);
+                // $('#id_footer').html(data);
+            }
+        }
+    </script>
+    <!--등록글 리스트 END-->
+
+    <!--동적태그-->
+    <script type="text/javascript">
+        $(document).on('click', '#id_title_link', function () {
+            var $row = $(this).closest('tr');
+            var valID = $row.attr('data-id');
+            var expertTitle = $row.find('#id_title_link').text();
+            var expertText = $row.find('#id_expert_text').text();
+
+            $('#id_senddata').text("수정");
+            $('#id_modal_body').hide();
+            $('#id_register').hide();
+            $('#register_dlg').show();
+
+            console.log("Title:" + expertTitle);
+            console.log("Body:" + expertText);
+            $('#id_register_id').val(valID);
+            $('#id_register_title').val(expertTitle);
+            // $('#id_register_body').text(expertText);
+            // $('#id_register_body').val(expertText);
+            $('#id_register_body').Editor('setText', expertText);
+        });
+
+        // if ($(event.target()).is('#foo')) { // 이벤트 발생 요소 확인(에러나는데???)
+        // }
+    </script>
+
+    <script>
+        $(document).on('click', '#id_register', function () {
+            //$('#id_modalbody').hide();
+            $('#id_modal_body').hide();
+            $('#id_register').hide();
+            $('#register_dlg').show();
+        });
+    </script>
+
+    <script>
+        $(document).hide(function () {
+            $('#id_modal_body').show();
+            $('#id_register').hide();
+            $('#register_dlg').hide();
+        });
+    </script>
+
+</head>
+
+<body>
+    <div class="container hidden">
+        <div class="col-md-5">
+
+        </div>
+    </div>
+
+    <input type="hidden" id="id_userID">
+
+    <!---->
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" id="id_modal_title">Counsel Item</h4>
+    </div>
+    <div class="modal-body" id="id_modalbody">
+        <div id="id_modal_body">
+            <!--1단(begin)-->
+            <div class="row" id="id_1st">
+            </div>
+            <!--1단(end)-->
+
+            <!--2단(begin)-->
+            <div class="row" id="id_2nd">
+                <textarea id="id_text" class="form-control" rows="5" readonly style="resize: none"></textarea>
+            </div>
+            <!--2단(end)-->
+
+            <!--3단(begin)-->
+            <div id="id_3rd">
+                <table class="table table-fixed">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th id="id_index">번호</th>
+                            <th id="id_nick">자문가</th>
+                            <th id="id_title">제목</th>
+                            <th id="id_created_at">자문일자</th>
+                        </tr>
+                    </thead>
+                    <tbody id="id_tableBody">
+                    </tbody>
+                </table>
+            </div>
+            <!--3단(end)-->
+        </div>
+    </div>
+
+    <div class="container" id="register_dlg" style="width: 100%">
+        <input type="hidden" id="id_register_id">
+        <table style="width: 100%" class="">
+            <tr>
+                <td id="id_write_jamoon">
+                    자문을 작성해주세요
+                </td>
+                <td id="id_sendData_btn">
+                    <button type="button" class="btn btn-default" id="id_senddata" onclick="sendData()">등록</button>
+                    <button type="button" class="btn btn-default" id="id_deldata" onclick="delData()">삭제</button>
+                </td>
+            </tr>
+        </table>
+        <table class="table table-bordered" style="width: 100%">
+            <tbody style="width: 100%">
+                <form method="post" encType="multiplart/form-data" style="width: 100%">
+                    <tr>
+                        <td>
+                            <input id="id_register_title" type="text" placeholder="제목을 입력하세요. " name="subject" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <textarea id="id_register_body"></textarea>
+                            <!--<textarea id="id_register_body" class="form-control" rows="5" id="comment" placeholder="내용을 입력하세요. " style="resize: none">
+                                </textarea>-->
+                        </td>
+                    </tr>
+                    <!--<tr>
+                        <td>
+                            <input type="text" placeholder="파일을 선택하세요. " name="filename" class="form-control" />
+                        </td>
+                    </tr>-->
+                    <!--<tr>
+                        <th>비밀번호: </th>
+                        <td><input type="password" placeholder="비밀번호를 입력하세요" class="form-control" /></td>
+                    </tr>-->
+                    <tr>
+                        <td colspan="2">
+                            <!--<button type="button" class="btn btn-default" id="id_senddata">등록</button>-->
+                            <!--<button type="button" class="btn btn-default" id="id_senddata" onclick="sendData()">등록</button>-->
+                            <!--<input type="button" value="등록" id="id_senddata" class="pull-right" />-->
+                            <!--<input type="button" value="reset" class="pull-left" />-->
+                            <!--<input type="button" value="글 목록으로... " class="pull-right" onclick="javascript:location.href='list.jsp'" />-->
+                            <!-- <a class="btn btn-default" onclick="sendData()"> 등록 </a>
+                    <a class="btn btn-default" type="reset"> reset </a>
+                    <a class="btn btn-default" onclick="javascript:location.href='list.jsp'">글 목록으로...</a> -->
+                        </td>
+                    </tr>
+                </form>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-footer" id="id_footer">
+        <!--<div class="col-md-6"><a id="id_register" class="btn btn-default">등록</a></div>-->
+    </div>
+
+    <!--Java Script-->
+
+    <!--이미지 크게보기(begin)-->
+    <script type="text/javascript">
+        function popupImgView(img) {
+            img1 = new Image();
+            img1.src = (img);
+            imgControll(img);
+        }
+
+        function imgControll(img) {
+            if ((img1.width != 0) && (img1.height != 0)) {
+                viewImage(img);
+            } else {
+                controller = "imgControll('" + img + "')";
+                intervalID = setTimeout(controller, 20);
+            }
+        }
+
+        function viewImage(img) {
+            W = img1.width;
+            H = img1.height;
+            O = "width=" + W + ",height=" + H + ",scrollbars=yes";
+            imgWin = window.open("", "", O);
+            imgWin.document.write("<html><head><title>:*:*:*: 이미지상세보기 :*:*:*:*:*:*:</title></head>");
+            imgWin.document.write("<body topmargin=0 leftmargin=0>");
+            imgWin.document.write("<img src=" + img +
+                " onclick='self.close()' style='cursor:pointer;' title ='클릭하시면 창이 닫힙니다.'>");
+            imgWin.document.close();
+        }
+    </script>
+    <!--이미지 크게보기(end)-->
+</body>
+
+</html>

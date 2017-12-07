@@ -1,0 +1,225 @@
+.tg {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.tg td {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    padding: 0px 5px;
+    border-style: solid;
+    border-width: 1px;
+    overflow: hidden;
+    word-break: normal;
+}
+
+.tg th {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    padding: 0px 5px;
+    border-style: solid;
+    border-width: 1px;
+    overflow: hidden;
+    word-break: normal;
+}
+
+.tg .tg-7uzy {
+    vertical-align: top
+}
+
+.tg .tg-lqy6 {
+    text-align: right;
+    vertical-align: top
+}
+
+.tg .tg-yw4l {
+    vertical-align: top
+}
+
+.tg .tg-jjut {
+    text-align: right;
+    vertical-align: top
+}
+
+#id_index {
+    /*border: 1px solid #dddddd;*/
+    text-align: center;
+    width: 10%;
+    /*font-size: 10px;*/
+}
+
+#id_nick {
+    /*border: 1px solid #dddddd;*/
+    text-align: center;
+    width: 15%;
+}
+
+#id_title {
+    /*border: 1px solid #dddddd;*/
+    text-align: center;
+    width: 55%;
+}
+
+#id_created_at {
+    /*border: 1px solid #dddddd;*/
+    text-align: center;
+    width: 20%;
+}
+
+#id_btn_modify {
+    text-align: center;
+}
+
+div#id_3rd {
+    /*height: 200px;*/
+    width: 100%;
+    /*overflow: auto;*/
+    border: none;
+    border-color: #ff0000;
+}
+
+img#id_profile_thumb {
+    width: 100px;
+    height: 100px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+img#id_user_thumb {
+    float: left;
+    width: 30px;
+    height: 30px;
+    /* IE6-9 */
+    /*filter: gray;*/
+    /* Google Chrome, Safari 6+ & Opera 15+ */
+    /*-webkit-filter: grayscale(1);*/
+    -webkit-box-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.75);
+    margin-bottom: 20px;
+    margin-right: 10px;
+}
+
+img#id_measure_thumb {
+    /*width: 50px;
+    height: 50px;
+    border: 1px solid;
+    border-color: #7f7f7f;*/
+    align-content: center;
+    width: auto;
+    /* max-height: 80px; */
+    max-height: 40px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 2px;
+}
+
+.content_detail_body {
+    width: 100%;
+    /*border-collapse: collapse;*/
+    border: 2px solid #e5e5e5;
+    padding: 3px;
+}
+
+tbody#id_tbody_detail {
+    background-color: white;
+}
+
+tbody#id_tbody_detail tr {
+    border: 2px solid #e5e5e5;
+}
+
+textarea#id_text_main {
+    /*margin: 10px;*/
+    /*margin-left: auto;
+    margin-right: auto;*/
+    padding: 0;
+    /*padding: auto;*/
+    width: 100%;
+    border: none;
+    background-color: white;
+    resize: none;
+}
+
+textarea#id_text_main_edit {
+    /*margin: 10px;*/
+    /*margin-left: auto;
+    margin-right: auto;*/
+    padding: 0;
+    /*padding: auto;*/
+    width: 100%;
+    border: none;
+    background-color: white;
+    resize: none;
+}
+
+.div-1st {
+    /*border: 1px solid;*/
+    text-align: center;
+}
+
+.table_detail {
+    width: 100%;
+    height: auto;
+    border-collapse: collapse;
+    border: none;
+    /*border: 2px solid black;*/
+    /*border-spacing: 40px;*/
+    margin-bottom: 10px;
+    float: left;
+}
+
+.td_detail {
+    /*border: 2px solid red;*/
+    border: none;
+    padding: 5px;
+}
+
+.td_thumb {
+    margin: auto;
+    text-align: center;
+    vertical-align: top;
+}
+
+.detail_info {
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.detail_info_body {
+    font-size: 13px;
+}
+
+.table_modal_item_top {
+    border: none;
+    /*border-color: #ff0000;*/
+}
+
+td#id_write_jamoon {
+    border: none;
+    /*border: 2px solid;*/
+}
+
+td#id_sendData_btn {
+    /*border: 2px solid;*/
+    align-content: right;
+    text-align: right;
+}
+
+.register_dlg {
+    vertical-align: top;
+}

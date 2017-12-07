@@ -1,0 +1,83 @@
+#id_upload_image_input_head {
+	/*background-color: #ff0000;*/
+}
+
+#id_upload_image_group input {
+	/*background-color: transparent;*/
+	border-left: 0;
+}
+
+input#id_upload_image_input {
+	/*background-image: url(../images/close.png);
+	background-repeat: no-repeat;
+	background-position: 2px 3px;
+	padding-left: 30px;*/
+	padding-left: 0px;
+	height: 36px;
+}
+
+button#remove-image-btn {
+	/*display: none;*/
+	margin-right: 1px;
+}
+
+/*button#remove-image-btn:active {
+	cursor: default;
+}*/
+
+button#remove-image-btn:disabled {
+	cursor: default;
+}
+
+input#id_upload_image_input:disabled {
+	background-color: white;
+	cursor: default;
+}
+
+input#id_files_input_hidden_main {
+	visibility: hidden;
+	position: absolute;
+}
+
+input#id_files_input_hidden {
+	visibility: hidden;
+	position: absolute;
+}
+
+
+/* enable absolute positioning */
+
+.inner-addon {
+	position: relative;
+}
+
+
+/* style glyph */
+
+.inner-addon .glyphicon {
+	position: absolute;
+	padding: 10px;
+	pointer-events: none;
+}
+
+
+/* align glyph */
+
+.left-addon .glyphicon {
+	left: 0px;
+}
+
+.right-addon .glyphicon {
+	right: 0px;
+}
+
+
+/* add padding  */
+
+.left-addon input {
+	padding-left: 30px;
+}
+
+.right-addon input {
+	padding-right: 30px;
+}

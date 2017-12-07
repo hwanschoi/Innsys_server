@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<script type="text/javascript">
+    function mySubmit(index) {
+        if (index == 1) {
+            if ($('#id_id').val().length == 0 || $('#id_password').val().length == 0) {
+                return;
+            }
+            document.myForm.action = '/process/users';
+        }
+        if (index == 2) {
+            document.myForm.action = '/process/users/join';
+        }
+        document.myForm.submit();
+        // 아이디 또는 비밀번호를 다시 확인하세요.
+        // 등록되지 않은 아이디이거나, 아이디 또는 비밀번호를 잘못 입력하셨습니다.
+    }
+</script>
+
+<!--KeyDown Enter(begin)-->
+<script type="text/javascript">
+    function onKeyDownEnter() {
+        if (event.which || event.keycode) {
+            //조건문 2개일 경우 ()로 반드시 감싸줘야하는듯?
+            if ((event.which == 13) || (event.keycode == 13)) {
+                // document.getElementById('#id_login').click();
+                userLogin();
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+</script>
+<!--KeyDown Enter(end)-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Innsys Login</title>
+
+    <!-- CSS -->
+    <!--<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">-->
+    <!--<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">-->
+    <!--<link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">-->
+    <!--<link rel="stylesheet" href="assets/css/form-elements.css">-->
+    <link rel="stylesheet" href="assets/css/style_login.css">
+    <script type="text/javascript" src="/js/util.js"></script>
+
+    <script type="text/javascript">
+        function userLogin() {
+            var val_id = $('#id_id').val();
+            var val_pw = $('#id_password').val();
+            if (val_id.length == 0 || val_pw.length == 0) {
+                alert('입력하시오');
+                return;
+            }
+
+            if (validEmailID(val_id) == false) {
+                return;
+            }
+
+            // document.myForm.action = '/process/users';
+            // document.myForm.submit();
+            // return;
+
+            var loginUrl = '/process/users';
+            var dataInfo = {
+                id: val_id,
+                password: val_pw
+            }
+
+            $.ajax({
+                type: 'post',
+                dataType: 'text',
+                data: dataInfo,
+                url: loginUrl,
+                cache: false,
+                async: false,
+                success: function (result) {
+                    console.log('login success' + result);
+                    if (result == 'invalid_id' || result == 'invalid_pw') {
+                        $('#id_password_group').css('margin-bottom', '15px');
+                        $('#id_input_error').css('display', 'block');
+                    } else {
+                        //refresh
+                        location.reload();
+                    }
+
+                },
+                error: function (req, err) {
+                    console.log('login fail');
+                }
+            })
+        }
+
+        function signUp() {
+            location.href = '/process/users/join';
+            // document.myForm.action = '/process/users/join';
+            // document.myForm.submit();
+            // var callUrl = '/process/users/jon';
+        }
+    </script>
+</head>
+
+<body onkeydown="onKeyDownEnter()">
+
+    <!-- Top content -->
+    <div class="top-content">
+        <div class="row">
+            <!---->
+            <div class="box">
+                <div id="header">
+                    <h1 id="logintoregister" style="text-align: center;"><strong>INNSYS</strong> Login&nbsp&nbsp&nbsp&nbsp&nbsp</h1>
+                </div>
+                <div name="myForm" role="" action="" method="" class="login-form">
+                    <div class="group">
+                        <input class="inputMaterial" type="text" name="id" id="id_id" required>
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label>E-mail</label>
+                    </div>
+                    <div class="group" id="id_password_group">
+                        <input class="inputMaterial" type="password" name="password" id="id_password" required>
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label>Password</label>
+                        <div class="row" id="id_input_error" style="display: none;">
+                            <div class="row" style="text-align: left; margin-top:5px;">
+                                <small style="font-size:0.6em; color:red;"><strong>아이디 또는 비밀번호를 다시 확인하세요.<br/>등록되지 않은 아이디이거나, 아이디 또는 비밀번호를 잘못 입력하셨습니다.</strong></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-button" style="margin-top: 0;">
+                        <button id="id_login" onclick="userLogin()" style="margin-top: 0;"><strong>Login</strong></button>
+                    </div>
+                </div>
+                <div id="footer-box">
+                    <p class="footer-text">Not a member?<span class="sign-up" onclick="signUp()"> &nbsp&nbspSign up now</span></p>
+                </div>
+            </div>
+            <!---->
+            <div class="row">
+                <a href="main.html">TestMain</a>
+                <a href="input_expert.html">입력창</a>
+                <a href="sample.html">"Font Sample"</a>
+                <a href="index_test.html">INDEX.html</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <!--배경화면 설정이 여기있네 jquery-->
+    <!--<script src="assets/js/jquery.backstretch.min.js"></script>-->
+    <!--<script src="assets/js/scripts.js"></script>-->
+</body>
+
+</html>

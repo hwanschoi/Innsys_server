@@ -1,0 +1,83 @@
+table#id_left {
+    /*font-family: arial, sans-serif;*/
+    font-family: '돋움체';
+    border-collapse: collapse;
+    width: 50%;
+    float: left;
+}
+
+table#id_right {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 50%;
+    float: right;
+}
+
+td#id_gubun,
+th {
+    /*border: 1px solid #dddddd;*/
+    text-align: left;
+    padding: 3px;
+    font-weight: bold;
+    width: 45%;
+}
+
+td#id_gubun_data {
+    /*border: 1px solid #dddddd;*/
+    text-align: left;
+    padding: 3px;
+    color: #7f7f7f;
+}
+
+.ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-wrap: normal;
+    width: auto;
+    overflow: hidden;
+}
+
+.ellipsis-multi {
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    /* 라인수 */
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+    line-height: 1.2em;
+    height: 3.6em;
+    /* line-height 가 1.2em 이고 3라인을 자르기 때문에 height는 1.2em * 3 = 3.6em */
+}
+
+.portfolio-item:hover {
+    /*.row:hover div[class^="col-"] {
+        background-color: #dcdcdc;
+    }*/
+    cursor: pointer;
+    background-color: #f5f5f5;
+}
+
+img#id_profile_thumb{
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+/*#id_profile_thumb img {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+}*/

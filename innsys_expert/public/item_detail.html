@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta name="" content="" charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <title>INNSYS</title>
+
+    <link rel="stylesheet" href="/assets/theme_expert/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="/assets/theme_expert/dist/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="/assets/theme_expert/dist/css/skins/_all-skins.min.css">
+
+    <link href="/css/lightbox.min.css" rel="stylesheet">
+    <link href="/css/modal_item.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/detail_comment2.css">
+    <link rel="stylesheet" type="text/css" href="/css/upload_image.css">
+
+    <script src="/js/jquery.js"></script>
+    <script type="text/javascript" src="/js/util.js"></script>
+    <script src="/js/lightbox-plus-jquery.min.js"></script>
+    <script src="/js/getDetailItemComments.js"></script>
+    <script src="/js/getTextarea.js"></script>
+    <script src="/js/input_img_upload.js"></script>
+    <!--<script src="/js/fileinput.min.js"></script>-->
+    <script type="text/javascript" src="/js/upload_image.js"></script>
+    <script type="text/javascript" src="/js/logout.js" charset="utf-8"></script>
+
+    <script>
+        //get 방식 parameter
+        $(document).ready(function () {
+            $.urlParam = function (name) {
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                if (results != null && results[1]) {
+                    return results[1] || 0;
+                }
+
+                return null;
+            }
+
+            console.log('DetailItem ID : ' + $.urlParam('dataID'));
+            $('#id_itemID').val($.urlParam('dataID'));
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#id_1st').empty();
+            var valID = $('#id_itemID').val();
+
+            var dataInfo = {
+                id: null,
+                result: null
+            }
+
+            var sendUrl = "/process/logic/getDetailRequestCounselItem?id=";
+            sendUrl += valID;
+            console.log(sendUrl);
+
+            $.ajax({
+                type: 'get',
+                url: sendUrl,
+                // data: form_data,
+                dataType: 'json',
+                success: function (result) {
+                    var valJson = JSON.stringify(result);
+                    ajaxEx.parseJSON(result.requestCounselItem);
+                },
+                error: function (request, error) {
+                    alert("실패!!!!!(1)");
+                }
+            });
+
+            var ajaxEx = {
+                parseJSON: function (result) {
+                    var data = "";
+                    $(result).each(function (i, item) {
+                        //analyze_id, age, sex, measure_part, img_thumbnail_path,
+                        //img_attach_path, img_ir_path, img_white_path, text
+                        //updated_at, created_at, title, nickname, name,
+                        //user_id, id, _id
+                        //추가항목(2017.06.07:skintype, sean, drink, smoke)
+
+                        //set title
+                        console.log(getUseTitle(item.title));
+                        $('#id_modal_title').text(getUseTitle(item.title));
+                        $('#id_content-title').text(getUseTitle(item.title));
+                        $('#id_user_thumb').attr('src', checkMeasurePartThumb(item.img_thumbnail_path));
+
+                        $('#id_userID').val(item.user_id);
+
+                        data += '<table class="table_detail">';
+                        data += '<tbody>';
+                        data += '<tr>';
+                        data += '<td class="td_detail" align="center">';
+                        data += '<a id="measure_thumb" href=' + item.img_uv_path +
+                            ' data-lightbox="measure_part">';
+                        data += '<img id="id_measure_thumb" alt="img_uv" src=' +
+                            checkMeasurePartThumb(item.img_uv_path) +
+                            ' class="img-responsive"></a>';
+                        data += '</td>';
+                        data += '<td class="td_detail" align="center">';
+                        data +=
+                            '<a id="measure_thumb" data-lightbox="measure_part" href=' +
+                            item.img_ir_path +
+                            '><img id="id_measure_thumb" alt="img_ir" src=' +
+                            checkMeasurePartThumb(item.img_ir_path) +
+                            ' class="img-responsive"></a>';
+                        data += '</td>';
+                        data += '<td class="td_detail" align="center">';
+                        data +=
+                            '<a id="measure_thumb" data-lightbox="measure_part" href=' +
+                            item.img_white_path +
+                            '><img id="id_measure_thumb" alt="img_white" src=' +
+                            checkMeasurePartThumb(item.img_white_path) +
+                            ' class="img-responsive"></a>';
+                        data += '</td>';
+                        data += '<td class="td_detail" align="center">';
+                        data +=
+                            '<a id="measure_thumb" data-lightbox="measure_part" href=' +
+                            item.img_attach_path +
+                            '><img id="id_measure_thumb" alt="attach" src=' +
+                            checkMeasurePartThumb(item.img_attach_path) +
+                            ' class="img-responsive"></a>';
+                        data += '</td>';
+                        data +=
+                            '<td class="td_detail" align="center" style="vertical-align:top;">';
+                        // data +=
+                        //     '<a id="id_analysis_btn" class="btn btn-default">분석결과</a>';
+                        // data +=
+                        //     '<a id="id_debugproj_btn" class="btn btn-default">디버그플젝</a>';
+                        data += '</td>';
+                        data += '</tr>'
+                        data += '</tbody>';
+                        data += '</table>';
+
+                        // 2nd text
+                        var detail_info = '';
+                        detail_info += item.nickname + ' / ' + item.age + ' / ' + item.measure_part +
+                            ' / ' + getSexManWoman(item.sex);
+                        $('#id_detail_info').html(detail_info);
+                        $('#id_detail_date').html(getDateFormat(item.created_at));
+
+                        $('#id_text_main').val(item.text);
+                        var textHeight = $('#id_text_main').get(0).scrollHeight;
+                        $('#id_text_main').height(textHeight);
+                    });
+
+                    $('#id_1st').html(data);
+                }
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $comments = $('#id_3rd');
+            // $comments.empty();
+            // $('#comments-list').empty();
+
+            // var $emptyTextArea = $('#id_reply_textarea_sample').clone(true);
+            // alert($emptyTextArea.get(0).scrollHeight);
+
+            getDetailItemComments(commentsList, $('#id_itemID').val(), 'comments-list');
+
+            function commentsList(result) {
+                // $comments.html(result);
+                // $('#comments-body').html(result);
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // alert("aaa");
+            // $('#id_tableBody').empty();
+            // var valID = $('#id_itemID').val();
+
+            // var sendUrl = "/process/logic/getCounsels?requestCounselId=";
+            // sendUrl += valID;
+            // console.log(sendUrl);
+
+            // $.ajax({
+            //     type: 'get',
+            //     dataType: 'json',
+            //     url: sendUrl,
+            //     cache: false,
+            //     // async: true,
+            //     success: function (result) {
+            //         // var j = JSON.stringify(result.CounselItems);
+            //         var j = JSON.stringify(result);
+            //         if (j.length == 0) {
+            //             alert("CounselItems:0");
+            //         }
+            //         ajaxEx2.parseJSON2(result);
+            //     },
+            //     error: function (request, err) {
+            //         console.log('Interface:getCounsels Error:' + err.toString());
+            //         //등록된 자문이 없습니다.
+            //         var data = "<tr>";
+            //         data += '<td colspan="4">';
+            //         data += '<h4 align="center">등록된 자문이 없습니다</h4>';
+            //         data += '</td>';
+            //         data += '</tr>';
+            //         // $('#id_tableBody').html(data);
+            //         $('#comments-body').html(data);
+            //     }
+            // });
+
+            // var ajaxEx2 = {
+            //     parseJSON2: function (result) {
+            //         var data = "";
+            //         $(result).each(function (i, item) {
+            //             var index = parseInt(i) + parseInt(1);
+            //             data += '<tr data-id=' + item.id + '>';
+            //             data += '<td id="id_index">' + index + '</td>';
+            //             data += '<td id="id_nick">' + item.expert_nick + '</td>';
+            //             data += '<td id="id_title"><a id="id_title_link" href="#">' +
+            //                 item.title +
+            //                 '</a></td>';
+            //             data += '<td id="id_created_at">' + '2017.04.01' + '</td>';
+            //             data += '<td style="display:none" id="id_expert_text" class="">';
+            //             data += item.text;
+            //             data += '</td>';
+            //             data += '</tr>';
+            //         });
+
+            //         // alert(data);
+            //         $('#id_tableBody').html(data);
+            //         // $('#id_text_counsel').val(item.text);
+            //         // $('#id_footer').html(data);
+            //     }
+            // }
+        });
+    </script>
+
+    <script>
+        $(document).on('click', '#id_debugproj_btn', function () {
+            $parent = $(this).closest('#id_modal_body');
+            var border = $('#id_3rd').css('border');
+            if (border.indexOf("none") != -1) {
+                $parent.find('input#id_debug_info').show();
+                $('#id_3rd').css('border', '3px solid red');
+                $('#id_text_main').css('border', '1px solid purple');
+                $('.reply-list').css('border', '1px solid purple');
+            } else {
+                $parent.find('input#id_debug_info').hide();
+                $('#id_3rd').css('border', '7px none red');
+                $('#id_text_main').css('border', 'none');
+                $('.reply-list').css('border', 'none');
+            }
+        })
+
+        $(document).on('click', '#id_analysis_btn', function () {
+            alert("Click Analysis Button");
+        });
+    </script>
+
+    <!--대댓글-->
+    <script>
+        $(document).on('click', '#id_reply', function () {
+            // var textarea = getTextarea();
+            // $(this).closest('li.comment-list-sub').append(textarea);
+            // $(this).closest('textarea').show();
+            console.log('item_detail:click main-reply');
+            var $parent = $(this).closest('div.comment-main-level');
+            $listReply = $parent.children('div.comment-list-reply');
+            $textArea = $listReply.find('textarea#id_reply_textarea');
+            $listReply.slideToggle('fast');
+            $textArea.val("");
+        });
+
+        $(document).on('click', '#id_cancel_send', function () {
+            var $parent = $(this).closest('div.comment-main-level');
+            $listReply = $parent.children('div.comment-list-reply');
+            $textArea = $listReply.find('textarea#id_reply_textarea');
+            $listReply.slideToggle('fast');
+            $textArea.val("");
+        });
+
+        $(document).on('click', '#id_edit', function () {
+            console.log('item_detail:click main-edit');
+            var $parent = $(this).closest('div.comment-main-level');
+
+            $edit = $parent.find('textarea#id_reply_edit');
+            if ($edit.css("display") != "none") {
+                alert("none");
+                return;
+            }
+
+            $content = $parent.find('textarea#id_comment_content');
+            $update = $parent.find('#id_btn_reply_update');
+            $cancel = $parent.find('#id_btn_reply_cancel');
+
+            var text = $content.text();
+            $content.hide();
+
+            $edit.val(text);
+            $edit.show();
+            $edit.select();
+
+            $update.show();
+            $cancel.show();
+        });
+
+        $(document).on('click', '#id_remove', function () {
+            console.log('item_detail:click main-remove');
+            var $parent = $(this).closest('div.comment-main-level');
+            $id = $parent.prev('input#id_comment_main_id');
+
+            var valCommentID = $id.val();
+            removeComment(valCommentID);
+        });
+
+        $(document).on('click', '#id_sub_reply', function () {
+            var $parent = $(this).closest('div.comment-reply-level');
+            $listReply = $parent.children('div.comment-list-reply');
+            $textArea = $listReply.find('textarea#id_reply_textarea');
+            $listReply.slideToggle('fast');
+            $textArea.val("");
+        });
+
+        $(document).on('click', '#id_cancel_send_sub', function () {
+            var $parent = $(this).closest('div.comment-reply-level');
+            $listReply = $parent.children('div.comment-list-reply');
+            $textArea = $listReply.find('textarea#id_reply_textarea');
+            $listReply.slideToggle('fast');
+            $textArea.val("");
+        });
+
+        $(document).on('click', '#id_sub_edit', function () {
+            alert('item_detail:click sub-edit');
+        });
+
+        $(document).on('click', '#id_sub_remove', function () {
+            console.log('item_detail:click sub-remove');
+            var valCommentID;
+            removeComment(valCommentID);
+        });
+    </script>
+
+    <!--Update/Cancel-->
+    <script>
+        $(document).on('click', '#id_btn_reply_update', function () {
+            var $parent = $(this).closest('div.comment-main-level');
+
+            $update = $parent.find('#id_btn_reply_update');
+            $cancel = $parent.find('#id_btn_reply_cancel');
+            $content = $parent.find('#id_comment_content');
+            $edit = $parent.find('textarea#id_reply_edit');
+            $id = $parent.prev('input#id_comment_main_id');
+
+            //update data
+            var textVal = $edit.val();
+            if (textVal.length == 0) {
+                alert('내용을 입력해 주세요');
+                return;
+            }
+
+            var sendUrl = "/process/logic/updateCounsel";
+            var dataInfo = {
+                id: $id.val(),
+                title: "",
+                text: textVal
+            }
+
+            $.ajax({
+                type: 'post',
+                dataType: 'text',
+                data: dataInfo,
+                url: sendUrl,
+                cache: false,
+                // async: false,
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                complete: function (result) {
+                    //alert("수정이 성공하였습니다.")
+                    // $.modal.close();
+                },
+                success: function (result) {
+                    console.log("success Counsel ID:" + $id.val());
+                    $content.show();
+                    $edit.hide();
+                    $update.hide();
+                    $cancel.hide();
+
+                    refreshList();
+                },
+                error: function (request, err) {
+                    alert("fail:" + err.toString());
+                }
+            });
+
+            function refreshList() {
+                //refresh
+                console.log("id_itemID:" + $('#id_itemID').val());
+                getDetailItemComments(commentsList, $('#id_itemID').val(), 'comments-list');
+
+                function commentsList(result) {
+                    // $comments_body = $('#comments-body');
+                    // $comments_body.empty();
+                    // $comments_body.html(result);
+                }
+            }
+        });
+
+        $(document).on('click', '#id_btn_reply_cancel', function () {
+            var $parent = $(this).closest('div.comment-main-level');
+
+            $update = $parent.find('#id_btn_reply_update');
+            $cancel = $parent.find('#id_btn_reply_cancel');
+            $content = $parent.find('#id_comment_content');
+            $edit = $parent.find('textarea#id_reply_edit');
+
+            $content.show();
+            $edit.hide();
+            $update.hide();
+            $cancel.hide();
+        });
+    </script>
+
+    <!--메인 댓글 추가-->
+    <script>
+        $(document).on('click', '#id_reply_send_main', function () {
+            $itemID = $('#id_itemID');
+            $textarea = $('#id_reply_textarea_main');
+
+            //send data
+            var textVal = $textarea.val();
+            if (textVal.length == 0) {
+                alert('내용을 입력해 주세요');
+                return;
+            }
+
+            // show loading
+            $('#loading').css('display', 'block');
+
+            var valID = $itemID.val();
+            // var callUrl = "/process/logic/writeCounsel";
+            var dataInfo = {
+                requestCounselId: valID,
+                title: "",
+                text: textVal
+            }
+
+            var callUrl = "/process/logic/writeCounsel";
+
+            // Make FormData
+            var formData = new FormData();
+            formData.append('requestCounselId', valID);
+            formData.append('title', '');
+            formData.append('text', textVal);
+            // uploadFile.type, uploadFile.name, uploadFile.size, 
+            var files = $('#id_files_input_hidden_main')[0].files;
+            if (files.length > 0) {
+                var uploadFile = files[0];
+                if (uploadFile.size > 0) {
+                    formData.append('myfile1', uploadFile);
+                }
+            }
+
+            ///////////////////////
+            // sendCounselItem(successSend, dataInfo);
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                data: formData,
+                url: callUrl,
+                processData: false, // important
+                contentType: false, // important
+                cache: false,
+                // async: false,
+                // contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                beforeSend: function () {
+                    console.log('BEFORE-SENDDDDDD')
+                    // src='/images/loading.gif';
+                },
+                complete: function (result) {
+                    console.log("call writeCounsel");
+                    // alert("등록이 성공하였습니다.")
+
+                    // hide loading
+                    $('#loading').css('display', 'none');
+                },
+                success: function (result) {
+                    console.log("item_detail(writeCounsel):" + result);
+                    $textarea.val('');
+
+                    refreshList(result);
+                },
+                error: function (req, err) {
+                    alert("실패:writeCounsel\n" + "code:" + req.status + "\n" + "message:" + req.responseText +
+                        "\n" + "error:" + err);
+                }
+            });
+            ///////////////////////
+
+            function refreshList(result) {
+                //refresh
+                getDetailItemComments(commentsList, valID, 'comments-list');
+
+                function commentsList(result) {
+                    // $comments_body = $('#comments-body');
+                    // $comments_body.empty();
+                    // $comments_body.html(result);
+                }
+            }
+        });
+    </script>
+
+    <!--대댓글 추가-->
+    <script>
+        $(document).on('click', '#id_reply_send_sub', function () {
+            var $parent = $(this).closest('div.comment-main-level');
+
+            $content = $parent.find('#id_comment_content');
+            $edit = $parent.find('textarea#id_reply_edit');
+            $id = $parent.prev('input#id_comment_main_id');
+            $uploadFile = $parent.find('#id_files_input_hidden');
+            $textarea = $parent.find('#id_reply_textarea');
+
+            if ($uploadFile.length == 0) {
+                alert('0 e da');
+            }
+
+            $itemID = $('#id_itemID');
+
+            var textVal = $textarea.val();
+            if (textVal.length == 0) {
+                alert('내용을 입력해 주세요');
+                return;
+            }
+
+            //upload image 추가해야함
+
+            var valID = $itemID.val();
+            // var sendUrl = "/process/logic/writeCounselComment";
+            // var dataInfo = {
+            //     requestCounselId: valID,
+            //     requestCounselItemId: $id.val(),
+            //     title: "",
+            //     text: textVal
+            // }
+
+            var callUrl = "/process/logic/writeCounsel";
+
+            // Make FormData
+            var formData = new FormData();
+            formData.append('requestCounselId', valID);
+            formData.append('parentId', $id.val());
+            formData.append('title', '');
+            formData.append('text', textVal);
+            // uploadFile.type, uploadFile.name, uploadFile.size, 
+            // select file count
+            var files = $uploadFile[0].files;
+            var fileCount = $uploadFile[0].files.length;
+
+            if (fileCount > 0) {
+                var file = files[0];
+                var fileName = file.name;
+                var fileSize = file.size;
+                var fileType = file.type;
+
+                if (fileSize > 0) {
+                    formData.append('myfile1', file);
+                }
+            }
+
+            ///////////////////////
+            // sendCounselItem(successSend, dataInfo);
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                data: formData,
+                url: callUrl,
+                processData: false, // important
+                contentType: false, // important
+                cache: false,
+                // async: false,
+                // contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                complete: function (result) {
+                    console.log("call writeReplyCounsel");
+                },
+                success: function (result) {
+                    console.log("item_detail(writeReplyCounsel):" + result);
+
+                    refreshList(result);
+                },
+                error: function (request, err) {
+                    alert("실패:writeReplyCounsel");
+                }
+            });
+            ///////////////////////
+
+            function refreshList(result) {
+                //refresh
+                getDetailItemComments(commentsList, valID, 'comments-list');
+
+                function commentsList(result) {
+                    // $comments_body = $('#comments-body');
+                    // $comments_body.empty();
+                    // $comments_body.html(result);
+                }
+            }
+        });
+    </script>
+    <script>
+        //id_reply_send_sub_sub
+        $(document).on('click', '#id_reply_send_sub_sub', function () {
+            var $parent = $(this).closest('div.comment-reply-level');
+
+            $content = $parent.find('#id_comment_content');
+            $edit = $parent.find('textarea#id_reply_edit');
+            $id = $parent.prev('input#id_comment_sub_id');
+            $uploadFile = $parent.find('#id_files_input_hidden');
+            $textarea = $parent.find('#id_reply_textarea');
+
+            if ($uploadFile.length == 0) {
+                alert('sub-sub 0 e da');
+            }
+
+            $itemID = $('#id_itemID');
+
+            var textVal = $textarea.val();
+            if (textVal.length == 0) {
+                alert('내용을 입력해 주세요');
+                return;
+            }
+
+            //upload image 추가해야함
+
+            var valID = $itemID.val();
+            // var sendUrl = "/process/logic/writeCounselComment";
+            // var dataInfo = {
+            //     requestCounselId: valID,
+            //     requestCounselItemId: $id.val(),
+            //     title: "",
+            //     text: textVal
+            // }
+
+            var callUrl = "/process/logic/writeCounsel";
+
+            // Make FormData
+            var formData = new FormData();
+            formData.append('requestCounselId', valID);
+            formData.append('parentId', $id.val());
+            formData.append('title', '');
+            formData.append('text', textVal);
+            // uploadFile.type, uploadFile.name, uploadFile.size, 
+            // select file count
+            var files = $uploadFile[0].files;
+            var fileCount = $uploadFile[0].files.length;
+
+            if (fileCount > 0) {
+                var file = files[0];
+                var fileName = file.name;
+                var fileSize = file.size;
+                var fileType = file.type;
+
+                if (fileSize > 0) {
+                    formData.append('myfile1', file);
+                }
+            }
+
+            ///////////////////////
+            // sendCounselItem(successSend, dataInfo);
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                data: formData,
+                url: callUrl,
+                processData: false, // important
+                contentType: false, // important
+                cache: false,
+                // async: false,
+                // contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                complete: function (result) {
+                    console.log("call writeReplyCounsel");
+                },
+                success: function (result) {
+                    console.log("item_detail(writeReplyCounsel):" + result);
+
+                    refreshList(result);
+                },
+                error: function (request, err) {
+                    alert("실패:writeReplyCounsel");
+                }
+            });
+            ///////////////////////
+
+            function refreshList(result) {
+                //refresh
+                getDetailItemComments(commentsList, valID, 'comments-list');
+
+                function commentsList(result) {
+                    // $comments_body = $('#comments-body');
+                    // $comments_body.empty();
+                    // $comments_body.html(result);
+                }
+            }
+        });
+    </script>
+
+    <!--대댓글 입력 취소-->
+    <script>
+        $(document).on('click', '#id_reply_send_cancel', function () {
+            alert("cancel");
+        });
+    </script>
+
+    <!--댓글 삭제-->
+    <script>
+        function removeComment(id) {
+            $itemID = $('#id_itemID');
+
+            var valID = $itemID.val();
+            var sendUrl = "/process/logic/removeCounselComment";
+            var dataInfo = {
+                requestCounselId: valID,
+                counselItemId: id
+            }
+
+            $.ajax({
+                type: 'post',
+                dataType: 'text',
+                data: dataInfo,
+                url: sendUrl,
+                cache: false,
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                complete: function (result) {
+                    console.log("item_detail:call removeCounsel");
+                },
+                success: function (result) {
+                    console.log("item_detail(removeCounsel):" + result);
+
+                    refreshList(result);
+                },
+                error: function (request, err) {
+                    alert("실패!!!(2)");
+                }
+            });
+
+            function refreshList(result) {
+                getDetailItemComments(commentsList, valID, 'comments-list');
+
+                function commentsList(result) {
+                    // $comments_body = $('#comments-body');
+                    // $comments_body.empty();
+                    // $comments_body.html(result);
+                }
+            }
+        };
+    </script>
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="/" class="logo">
+                <i class="fa fa-wifi"></i>
+                <span class="logo-lg"><b>INNSYS</b>.com</span>
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <!-- User Account: style can be found in dropdown.less -->
+                        <li class="dropdown user user-menu">
+                            <a id="id_logout" href="javascript:void(0);" class="" data-toggle="button" role="button">
+                                <i class="fa fa-user"></i>
+                                <span class="sr-only">Toggle Logout</span>Sign out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- Sidebar user panel -->
+                <div class="user-panel">
+                    <div class="pull-left image">
+                        <img src="/assets/theme_expert/dist/img/sana.png" class="img-circle" alt="User Image">
+                    </div>
+                    <div class="pull-left info">
+                        <p>Innsys User Name</p>
+                        <!--<a href="#"><i class="fa fa-circle text-success"></i> Online</a>-->
+                    </div>
+                </div>
+                <!-- search form -->
+                <form action="#" method="get" class="sidebar-form hidden">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Search...">
+                        <span class="input-group-btn">
+                            <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </form>
+                <!-- /.search form -->
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu">
+                    <!--<li class="header">MAIN</li>-->
+                    <li class="">
+                        <a href="/">
+                            <i class="fa fa-th-list"></i>
+                            <span> Consultation List</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="beauty_news.html">
+                            <i class="fa fa-newspaper-o"></i>
+                            <span> Beauty News</span>
+                            <span class="pull-right-container">
+                                <!--<small class="label pull-right bg-green">
+                                    new
+                                </small>-->
+                            </span>
+                        </a>
+                    </li>
+                    <li class="treeview">
+                        <a href="javascript:void(0)">
+                            <i class="fa fa-vcard-o"></i><span> My Page</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="/my_profile.html"><i class="fa fa-bug"></i> 프로필 관리</a></li>
+                            <li><a href="/my_geul_bogi.html"><i class="fa fa-bug"></i> 내가 쓴글 보기</a></li>
+                            <li><a href="/empty.html"><i class="fa fa-bug"></i> Three</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="contact.html">
+                            <i class="fa fa-send-o"></i>
+                            <span> Contact</span>
+                            <span class="pull-right-container">
+                                <!--<small class="label pull-right bg-green">
+                                    new
+                                </small>-->
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <ol class="breadcrumb">
+                    <li><a href="/"><i class="fa fa-folder-open"></i> Home</a></li>
+                    <li class="active">detail</li>
+                </ol>
+                <div class="content-header-info">
+                    <img id="id_user_thumb" src="">
+                    <h4 id="id_content-title" style="padding-top: 5px;">Data
+                        <small></small>
+                    </h4>
+                </div>
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+                <input type="hidden" id="id_userID">
+                <input type="hidden" id="id_itemID">
+                <section class="content">
+                    <div class="row">
+                        <!--<h1>GongSaJoong</h1>
+                        <img src="assets/theme_expert/dist/img/sapzil.png" alt="" align="center">-->
+                        <div id="id_modal_body" style="overflow-x: scroll">
+                            <!--1단(begin)-->
+                            <div class="row">
+                                <div class="div-1st">
+                                    <div class="col-lg-12" id="id_1st"></div>
+                                </div>
+                            </div>
+                            <!--1단(end)-->
+
+                            <!--3단(begin)-->
+                            <div class="row">
+                                <div class="col-lg-12" id="id_3rd">
+                                    <!-- Contenedor Principal -->
+                                    <div class="comments-container">
+                                        <div class="comments-header">
+                                            <!--///////////////////////////-->
+                                            <div class="box box-primary">
+                                                <div class="box-header with-border">
+                                                    <h4 class="box-title" id="id_detail_info">Curry/30/엉덩이/여자</h4>
+                                                    <div class="box-tools pull-right" id="id_detail_date">
+                                                        9999.01.01
+                                                    </div>
+                                                </div>
+                                                <div class="box-body">
+                                                    <ul class="products-list product-list-in-box">
+                                                        <textarea id="id_text_main" class="form-control" readonly></textarea>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="comments-body" id="comments-body">
+                                            <!--<h3>댓글을 작성해 주세요.</h3>-->
+                                            <ul class="comments-list" id="comments-list">
+                                            </ul>
+                                        </div>
+                                        <hr style="margin-top: 30px; border: 1px solid #cbcbcb;">
+                                        <div class="comments-footer" id="comments-footer">
+                                            <div class="input-group reply_main_textarea">
+                                                <textarea id="id_reply_textarea_main" class="form-control" rows="3" cols="" placeholder="내용을 입력하세요."></textarea>
+                                                <span class="input-group-btn">
+                                                    <button id="id_reply_send_main" type="button" class="btn bg-navy">Send</button>
+                                                    </span>
+                                            </div>
+                                            <!--<div class="row">-->
+                                            <!--이미지 업로드 begin-->
+                                            <!--<div class="filebox bs3-primary preview-image">
+                                                    <input class="upload-name" value="파일선택" disabled="disabled" style="width: 200px;">
+                                                    <label for="input_file">업로드</label>
+                                                    <input type="file" id="input_file" class="upload-hidden" onchange="fileCheck(this)">
+                                                </div>-->
+                                            <div class="form-group reply-upload">
+                                                <!--<input id="id_upload_image_btn_main" class="file" type="file" data-show-upload="false" data-show-preview="false">-->
+                                                <input type="file" class="file" id="id_files_input_hidden_main" name="">
+                                                <div class="input-group col-xs-12" id="id_upload_image_group">
+                                                    <!--<div class="inner-addon left-addon">
+                                                        <span class="glyphicon glyphicon-trash"></span>
+                                                        <input type="text" id="id_upload_image_input" class="form-control" disabled placeholder="Upload Image">
+                                                    </div>-->
+                                                    <!--<span class="input-group-addon" id="id_upload_image_input_head"><span class="glyphicon glyphicon-picture"></span></span>-->
+                                                    <span class="input-group-addon" id="id_upload_image_input_head"><span class="glyphicon glyphicon-picture"></span></span>
+                                                    <input type="text" id="id_upload_image_input" class="form-control" disabled placeholder="Upload Image">
+                                                    <span class="input-group-btn">
+                                                        <button type="button" class="remove-image btn btn-danger" id="remove-image-btn" disabled="true">
+                                                            <i class="glyphicon glyphicon-trash"></i>
+                                                    </button>
+                                                    <button type="button" class="browse btn bg-navy">
+                                                            <i class="glyphicon glyphicon-folder-open"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <!--이미지 업로드 end-->
+                                            <!--</div>-->
+                                        </div>
+                                        <!--copy data begin-->
+                                        <div class="hidden">
+                                            <ul id="comments-list" class="comments-list">
+                                                <li class="comment-list-sub-sample" id="comment-list-sub-sample">
+                                                    <input style="width:100%; display: none; background-color: #FFAEC9;" type="text" id="id_debug_info" value="" />
+                                                    <input style="width:100%; display: none; background-color: #FFAEC9;" type="text" id="id_comment_main_id" value="" />
+                                                    <div class="comment-main-level">
+                                                        <div class="row" style="margin:0;">
+                                                            <div class="comment-box">
+                                                                <div class="comment-head">
+                                                                    <div class="comment-thumb">
+                                                                        <img id="id_img_comment_user_thumb" src=''>
+                                                                    </div>
+                                                                    <h6 class="comment-name by-author">Nickname(Curry)</h6>
+                                                                    <i class="fa fa-remove" id="id_remove"></i>
+                                                                    <i class="fa fa-pencil-square-o" id="id_edit"></i>
+                                                                    <i class="fa fa-reply" id="id_reply"></i>
+                                                                    <button id="id_btn_reply_update" type="button" class="btn btn-default" style="display: none;">Update</button>
+                                                                    <button id="id_btn_reply_cancel" type="button" class="btn btn-default" style="display: none;">Cancel</button>
+                                                                </div>
+                                                                <div id="id_upload_image">
+                                                                    <!--http://i.imgur.com/hD4Jmxv.mp4-->
+                                                                    <!--http://i.imgur.com/nFQAJCH.png-->
+                                                                    <img id="id_upload_image_thumb" class="id_upload_image" src='' alt="" />
+                                                                </div>
+                                                                <textarea id="id_comment_content" class="form-control" rows="" cols="" readonly>Empty</textarea>
+                                                                <textarea id="id_reply_edit" class="form-control" rows="" cols="" style="display: none;"></textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <!--//reply textarea-->
+                                                        <div class="row comment-list-reply" style="margin:0; display: none;">
+                                                            <div class="input-group main_reply_textarea">
+                                                                <textarea id="id_reply_textarea" class="form-control" rows="3" cols="" style="resize: none" placeholder="내용을 입력하세요."></textarea>
+                                                                <span class="input-group-btn" style="vertical-align: top; padding-top: 3px; padding-right: 3px;">
+                                                                        <a class="btn btn-comment-cancel"><i class="fa fa-remove" id="id_cancel_send"></i></a>
+                                                                    </span>
+                                                                <span class="input-group-btn">
+                                                                    <button id="id_reply_send_sub" type="button" class="btn btn-primary">Send</button>
+                                                                    </span>
+                                                            </div>
+                                                            <div class="form-group reply-upload">
+                                                                <input type="file" class="file" id="id_files_input_hidden" name="">
+                                                                <div class="input-group col-xs-12">
+                                                                    <input type="text" id="id_upload_image_input" class="form-control" disabled placeholder="Upload Image">
+                                                                    <span class="input-group-btn">
+                                                                            <button type="button" class="remove-image btn btn-warning" id="remove-image-btn"  disabled="true">
+                                                                                <span class="glyphicon glyphicon-trash"></span>
+                                                                    </button>
+                                                                    <button type="button" class="browse btn btn-primary"><i class="glyphicon glyphicon-folder-open"></i></button>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <ul class="comments-list reply-list" id="reply-list">
+                                                    <li class="comment-list-sub-reply-sample" id="comment-list-sub-reply-sample">
+                                                        <input style="width:100%; display: none; background-color: #FFAEC9;" type="text" id="id_parent_id" value="" />
+                                                        <input style="width:100%; display: none; background-color: #FFAEC9;" type="text" id="id_debug_info" value="" />
+                                                        <input style="width:100%; display: none; background-color: #FFAEC9;" type="text" id="id_comment_sub_id" value="" />
+                                                        <div class="comment-reply-level">
+                                                            <div class="row" style="margin:0;">
+                                                                <div class="comment-box">
+                                                                    <div class="comment-head">
+                                                                        <i class="fa fa-reply fa-rotate-90 fa-left"></i>
+                                                                        <div class="comment-thumb">
+                                                                            <img id="id_img_comment_user_thumb" src='/images/default_user_thumb.png'>
+                                                                        </div>
+                                                                        <h6 class="comment-name">Nickname(Lebron)</h6>
+                                                                        <i class="fa fa-remove" id="id_sub_remove"></i>
+                                                                        <i class="fa fa-pencil" id="id_sub_edit"></i>
+                                                                        <i class="fa fa-reply" id="id_sub_reply"></i>
+                                                                    </div>
+                                                                    <div id="id_upload_image">
+                                                                        <!--http://i.imgur.com/hD4Jmxv.mp4-->
+                                                                        <!--http://i.imgur.com/nFQAJCH.png-->
+                                                                        <img id="id_upload_image_thumb" class="id_upload_image" src='' alt="" />
+                                                                    </div>
+                                                                    <textarea id="id_comment_content" class="form-control" rows="" cols="" readonly>Empty</textarea>
+                                                                    <textarea id="id_reply_edit" class="form-control" rows="" cols="" style="display: none;"></textarea>
+                                                                </div>
+                                                            </div>
+                                                            <!--//sub reply textarea-->
+                                                            <div class="row comment-list-reply" style="margin:0; display: none;">
+                                                                <div class="input-group sub_reply_textarea">
+                                                                    <textarea id="id_reply_textarea" class="form-control" rows="3" cols="" style="resize: none" placeholder="내용을 입력하세요."></textarea>
+                                                                    <span class="input-group-btn" style="vertical-align: top; padding-top: 3px; padding-right: 3px;">
+                                                                        <a class="btn btn-comment-cancel"><i class="fa fa-remove" id="id_cancel_send_sub"></i></a>
+                                                                    </span>
+                                                                    <span class="input-group-btn">
+                                                                        <button id="id_reply_send_sub_sub" type="button" class="btn btn-primary" style="height:72px">Send</button>
+                                                                        </span>
+                                                                </div>
+                                                                <div class="form-group reply-upload">
+                                                                    <input type="file" class="file" id="id_files_input_hidden" name="">
+                                                                    <div class="input-group col-xs-12">
+                                                                        <input type="text" id="id_upload_image_input" class="form-control" disabled placeholder="Upload Image">
+                                                                        <span class="input-group-btn">
+                                                                            <button type="button" class="remove-image btn btn-warning" id="remove-image-btn"  disabled="true">
+                                                                                <span class="glyphicon glyphicon-trash"></span>
+                                                                        </button>
+                                                                        <button type="button" class="browse btn btn-primary"><i class="glyphicon glyphicon-folder-open"></i></button>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </ul>
+                                        </div>
+                                        <!--copy data end-->
+                                    </div>
+                                </div>
+                            </div>
+                            <!--3단(end)-->
+                        </div>
+                    </div>
+                </section>
+                <!-- Main row -->
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+        <footer class="main-footer">
+            <!--<div class="pull-right hidden-xs">
+                <b>made in china  </b>17.04.01
+            </div>-->
+            <strong>Copyright &copy; <a href="http://www.innsys.com/" target="_blank">Innsys Corp</a>.</strong> All rights
+            reserved.
+        </footer>
+    </div>
+    <div id='loading' class='hidden' style="display: none;">
+        <div class="modal" id="mymodal">
+            <div id="modalcontent">
+                <div id="modalhead"> </div>
+                <div id="modalbody"> </div>
+                <div id="modalfooter"> </div>
+                <img src="/images/loading/loading_cube.gif">
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery 2.2.3 -->
+    <script src="/assets/theme_expert/plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.6 -->
+    <script src="/assets/theme_expert/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Morris.js charts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <!-- daterangepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <!-- Bootstrap WYSIHTML5 -->
+    <script src="/assets/theme_expert/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+    <!-- Slimscroll -->
+    <script src="/assets/theme_expert/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/assets/theme_expert/dist/js/app.min.js"></script>
+    <script src="/assets/theme_expert/dist/js/pages/dashboard.js"></script>
+</body>
+
+</html>

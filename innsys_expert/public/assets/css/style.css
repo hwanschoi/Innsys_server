@@ -1,0 +1,378 @@
+body {
+	font-family: 'Roboto', sans-serif;
+	font-size: 16px;
+	font-weight: 300;
+	color: #888;
+	line-height: 30px;
+	text-align: center;
+}
+
+strong {
+	font-weight: 500;
+}
+
+a,
+a:hover,
+a:focus {
+	color: #4aaf51;
+	text-decoration: none;
+	-o-transition: all .3s;
+	-moz-transition: all .3s;
+	-webkit-transition: all .3s;
+	-ms-transition: all .3s;
+	transition: all .3s;
+}
+
+h1,
+h2 {
+	margin-top: 10px;
+	font-size: 38px;
+	font-weight: 100;
+	color: #555;
+	line-height: 50px;
+}
+
+h3 {
+	font-size: 22px;
+	font-weight: 300;
+	color: #555;
+	line-height: 30px;
+}
+
+img {
+	max-width: 100%;
+}
+
+::-moz-selection {
+	background: #4aaf51;
+	color: #fff;
+	text-shadow: none;
+}
+
+::selection {
+	background: #4aaf51;
+	color: #fff;
+	text-shadow: none;
+}
+
+
+/***** Top content *****/
+
+.inner-bg {
+	padding: 100px 0 170px 0;
+}
+
+.top-content .text {
+	color: #fff;
+}
+
+.top-content .text h1 {
+	color: #fff;
+}
+
+.top-content .description {
+	margin: 20px 0 10px 0;
+}
+
+.top-content .description p {
+	opacity: 0.8;
+}
+
+.top-content .description a {
+	color: #fff;
+}
+
+.top-content .description a:hover,
+.top-content .description a:focus {
+	border-bottom: 1px dotted #fff;
+}
+
+.form-box {
+	margin-top: 35px;
+}
+
+.form-top {
+	overflow: hidden;
+	padding: 0 25px 15px 25px;
+	background: #fff;
+	-moz-border-radius: 4px 4px 0 0;
+	-webkit-border-radius: 4px 4px 0 0;
+	border-radius: 4px 4px 0 0;
+	text-align: left;
+}
+
+.form-top-left {
+	float: left;
+	width: 75%;
+	padding-top: 25px;
+}
+
+.form-top-left h3 {
+	margin-top: 0;
+}
+
+.form-top-right {
+	float: left;
+	width: 25%;
+	padding-top: 5px;
+	font-size: 66px;
+	color: #ddd;
+	line-height: 100px;
+	text-align: right;
+}
+
+.form-bottom {
+	padding: 25px 25px 20px 25px;
+	background: #eee;
+	-moz-border-radius: 0 0 4px 4px;
+	-webkit-border-radius: 0 0 4px 4px;
+	border-radius: 0 0 4px 4px;
+	text-align: left;
+}
+
+.form-bottom form textarea {
+	height: 100px;
+}
+
+.form-bottom form button.btn {
+	width: 100%;
+}
+
+
+/***** Media queries *****/
+
+@media (min-width: 992px) and (max-width: 1199px) {}
+
+@media (min-width: 768px) and (max-width: 991px) {}
+
+@media (max-width: 767px) {
+	.inner-bg {
+		padding: 60px 0 110px 0;
+	}
+}
+
+@media (max-width: 415px) {
+	h1,
+	h2 {
+		font-size: 32px;
+	}
+}
+
+
+/* Login 2017.05.06 Version */
+
+@import url(http://fonts.googleapis.com/css?family=Roboto:300,400,500);
+html {
+	background-color: #d1d1d1;
+	font-family: "Roboto";
+}
+
+
+/* BOX LOGIN */
+
+.box {
+	position: relative;
+	margin: auto;
+	height: 375px;
+	top: 40px;
+	left: 0;
+	z-index: 200;
+	right: 0;
+	width: 400px;
+	color: #666;
+	border-radius: 3px;
+	background: #FFF;
+	margin-bottom: 100px;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+	overflow: hidden;
+}
+
+.box h1 {
+	margin-left: 40px;
+	padding-bottom: 30px;
+	font-size: 25px;
+	font-weight: 300;
+	color: #607d8b;
+}
+
+.box button {
+	background: #cfd8dc;
+	border: 0;
+	color: #00a0f1;
+	padding: 10px;
+	font-size: 16px;
+	font-weight: 300;
+	width: 330px;
+	margin: 20px auto;
+	display: block;
+	cursor: pointer;
+	-webkit-transition: all 0.4s;
+	transition: all 0.4s;
+	border-radius: 2px;
+}
+
+.box button:active {
+	background: #00a0f1;
+	color: #263238;
+}
+
+.box button:hover {
+	background: #00a0f1;
+	color: #FFF;
+	-webkit-transition: all 0.4s;
+	transition: all 0.4s;
+}
+
+.box p {
+	font-size: 14px;
+	text-align: center;
+}
+
+.group {
+	position: relative;
+	margin-bottom: 35px;
+	margin-left: 40px;
+}
+
+.inputMaterial {
+	font-size: 18px;
+	padding: 10px 10px 10px 5px;
+	display: block;
+	width: 300px;
+	border: none;
+	border-bottom: 1px solid #757575;
+}
+
+.inputMaterial:focus {
+	outline: none;
+}
+
+
+/* LABEL ======================================= */
+
+label {
+	color: #999;
+	font-size: 14px;
+	font-weight: normal;
+	position: absolute;
+	pointer-events: none;
+	left: 5px;
+	top: 10px;
+	transition: 0.2s ease all;
+	-moz-transition: 0.2s ease all;
+	-webkit-transition: 0.2s ease all;
+}
+
+
+/* active state */
+
+.inputMaterial:focus~label,
+.inputMaterial:valid~label {
+	top: -20px;
+	font-size: 14px;
+	color: #00a0f1;
+}
+
+
+/* BOTTOM BARS ================================= */
+
+.bar {
+	position: relative;
+	display: block;
+	width: 315px;
+}
+
+.bar:before,
+.bar:after {
+	content: '';
+	height: 2px;
+	width: 0;
+	bottom: 1px;
+	position: absolute;
+	background: #00a0f1;
+	transition: 0.2s ease all;
+	-moz-transition: 0.2s ease all;
+	-webkit-transition: 0.2s ease all;
+}
+
+.bar:before {
+	left: 50%;
+}
+
+.bar:after {
+	right: 50%;
+}
+
+
+/* active state */
+
+.inputMaterial:focus~.bar:before,
+.inputMaterial:focus~.bar:after {
+	width: 50%;
+}
+
+
+/* active state */
+
+.inputMaterial:focus~.highlight {
+	-webkit-animation: inputHighlighter 0.3s ease;
+	-moz-animation: inputHighlighter 0.3s ease;
+	animation: inputHighlighter 0.3s ease;
+}
+
+
+/* ANIMATIONS ================ */
+
+@-webkit-keyframes inputHighlighter {
+	from {
+		background: #5264AE;
+	}
+	to {
+		width: 0;
+		background: transparent;
+	}
+}
+
+@-moz-keyframes inputHighlighter {
+	from {
+		background: #5264AE;
+	}
+	to {
+		width: 0;
+		background: transparent;
+	}
+}
+
+@keyframes inputHighlighter {
+	from {
+		background: #5264AE;
+	}
+	to {
+		width: 0;
+		background: transparent;
+	}
+}
+
+#footer-box {
+	width: 100%;
+	height: 50px;
+	background: #5fafcc;
+	position: absolute;
+	bottom: 0;
+}
+
+.footer-text {
+	color: #cfd8dc;
+}
+
+.sign-up {
+	color: white;
+	cursor: pointer;
+}
+
+.sign-up:hover {
+	color: #b2dfdb;
+}
+
+
+/* Login*/

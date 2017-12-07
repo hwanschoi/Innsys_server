@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta name="" content="" charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <title>test mobile home</title>
+    <link rel="stylesheet" type="text/css" href="/assets/theme_expert/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/innsys_mobile/css/main_style.css">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/earlyaccess/hanna.css">
+
+    <script type="text/javascript" src="/js/jquery.js"></script>
+    <script type="text/javascript" src="/js/util.js"></script>
+
+    <script>
+        var ls = {
+            get: function () {
+                var test = 'test';
+                try {
+                    localStorage.setItem(test, test);
+                    localStorage.removeItem(test);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+        };
+
+        function checkWebStorage() {
+            sessionStorage.setItem('testKey', 'value');
+            var data = sessionStorage.getItem('testKey');
+            alert(data);
+
+            if (window.localStorage) {
+                alert("Support Web Storage");
+            } else {
+                alert("asjhoiwnsidf");
+            }
+
+            // if (('localStorage' in window) && window['localStorage'] != 'undefined') {
+            if (('localStorage' in window) && typeof window.localStorage != 'undefined') {
+                alert("Web Storage를 지원합니다.");
+            } else {
+                alert("Web Storage를 지원하지 않습니다");
+            }
+
+            if (ls) {
+                alert('success');
+            } else {
+                alert('fail');
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function getCounselItems(filter) {
+
+            var filterParam = '';
+            if (typeof filter != 'undefined') {
+                if (typeof filter.valueOf() == 'string' && filter.length > 0) {
+                    filterParam = filter;
+                }
+            }
+
+            if (filterParam == '') {
+                filterParam = '전체';
+            }
+
+            var dataInfo = {
+                id: null,
+                result: null
+            }
+
+            var postData = {
+                pageIdx: '',
+                userID: '',
+                filter: filterParam
+            }
+
+            $('#main_body').empty();
+
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '/process/logic/getRequestCounsels',
+                data: postData,
+                cache: false,
+                async: true,
+                success: function (result) {
+                    dataInfo.result = JSON.stringify(result.summaryRequestCounselItems);
+
+                    ajaxEx.parseJSON(result.summaryRequestCounselItems)
+                },
+                error: function (request, error) {
+                    alert("실패!!!(mobile_all)");
+                }
+            });
+            ///////////////////////////////////////////////////////
+
+            var ajaxEx = {
+                parseJSON: function (result) {
+                    var keyArray = [];
+                    $('#main_body').empty();
+                    var dataList = "";
+
+                    // 한줄에 표시할 아이템수 : 모바일 페이지에서는 의미가 없음
+                    var columnPerRow = 2;
+
+                    $(result).each(function (i, item) {
+                        //create row
+                        //////
+                        dataList += '<div class="col-md-6 counsel_item">';
+                        dataList += '<div class="well well-sm counsel_item_min"';
+                        dataList += ' data-id=' + item.id + '>';
+                        dataList += '<div class="row">';
+                        dataList +=
+                            '<div class="col-xs-3 col-md-3" style="text-align:center;">';
+
+                        //Measure Thumbnail
+                        dataList += '<img src="';
+                        dataList += getMeasurePartIcon(item.measure_part) + '"';
+                        dataList +=
+                            ' alt="mp_thumb" class="img-rounded img-responsive" style="text-align:center;">';
+                        dataList += '</div>';
+
+                        // DataInfo
+                        dataList += '<div class="col-xs-9 col-md-9 section-box">';
+                        dataList += '<div class="row" id="id_title">';
+                        dataList += '<span class="badge badge-info pull-right">';
+                        dataList += item.comment_count;
+                        dataList += '</span>';
+                        dataList += '<h2 class="mobile_ellipsis">';
+                        dataList += item.title;
+                        dataList += '</h2>';
+                        dataList += '</div>';
+                        dataList += '<div class="row rating-desc">';
+                        // dataList += '<span class="glyphicon glyphicon-eye-open"></span>';
+                        dataList += '생성일 : ';
+                        dataList += getDateFormat(item.create_at);
+                        dataList += '</div>';
+                        dataList += '</div>';
+
+                        dataList += '</div>'
+                        dataList += '</div>'
+                        dataList += '</div>'
+                        ///////
+                    });
+
+                    $('#main_body').html(dataList);
+                }
+            }
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $.urlParam = function (name) {
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                if (results != null && results[1]) {
+                    return results[1] || 0;
+                }
+
+                return null;
+            }
+
+            var valUserID = $.urlParam('userID');
+
+            $('#id_userID').val(valUserID);
+
+            getCounselItems();
+        });
+    </script>
+
+    <script>
+        function detailSubmit(id) {
+            document.detailFormMobile.action = '/process/detail/getdetailmobile';
+            var elem = document.createElement("input");
+            elem.setAttribute("type", "hidden");
+            elem.setAttribute("name", "dataID");
+            elem.setAttribute("value", id);
+            document.detailFormMobile.appendChild(elem);
+            document.detailFormMobile.submit();
+        }
+    </script>
+
+    <script>
+        $(document).on('click', '.counsel_item_min', function () {
+            // checkWebStorage();
+            var dataID = $(this).attr('data-id');
+            detailSubmit(dataID);
+        });
+    </script>
+
+    <script>
+        $(document).on('click', '#id_menu_item', function () {
+            $btnMenu = $(this).closest('.btn-group').find('button');
+            $dropdown_menu = $(this).closest('.dropdown-menu');
+
+            // success
+            var key = $(this).attr('value');
+            alert(key);
+            $btnMenu.text($(this).text());
+
+            // list 재구성
+            getCounselItems(key);
+        });
+    </script>
+    <script>
+        function clickCounselListMyMy() {
+            var linkMyMy = "/mobile/mymy?userID=" + $('#id_userID').val();
+            location.href = linkMyMy;
+        }
+
+        function clickCounselListAll() {
+            var linkAll = "/mobile/all?userID=" + $('#id_userID').val();
+            location.href = linkAll;
+        }
+    </script>
+</head>
+
+<body>
+    <input type="hidden" id="id_userID">
+    <form name="detailFormMobile" role="form" action="" method="get"></form>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="">
+                    <ul class="nav nav-tabs" id="id_tabs">
+                        <li class=""><a onclick="clickCounselListMyMy()" href="javascript:void(0)" data-toggle="tab">마이마이</a></li>
+                        <li class="active"><a href="javascript:void(0)" data-toggle="tab">전체</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row measure-filter">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            전체  <span class="caret"></span>
+            </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a id="id_menu_item" href="javascript:void(0)" value="전체">전체</a></li>
+                        <li><a id="id_menu_item" href="javascript:void(0)" value="이마">이마</a></li>
+                        <li><a id="id_menu_item" href="javascript:void(0)" value="눈가">눈가</a></li>
+                        <li class="divider"></li>
+                        <li><a id="id_menu_item" href="javascript:void(0)" value="볼">볼</a></li>
+                        <li><a id="id_menu_item" href="javascript:void(0)" value="목">목</a></li>
+                        <li><a id="id_menu_item" href="javascript:void(0)" value="턱">턱</a></li>
+                        <li><a id="id_menu_item" href="javascript:void(0)" value="코">코</a></li>
+                        <li><a id="id_menu_item" href="javascript:void(0)" value="기타">기타</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row" id="main_body">
+                <div class="col-md-6 counsel_item">
+                    <div class="well well-sm counsel_item_min hidden">
+                        <div class="row">
+                            <div class="col-xs-3 col-md-3" style="text-align:center;">
+                                <img src="/images/mp_cheek.png" alt="mp_thumb" class="img-rounded img-responsive" style="text-align:center;">
+                            </div>
+                            <div class="col-xs-9 col-md-9 section-box">
+                                <h2>무좀에 엉덩이가 났어요</h2>
+                                <p>슈웃~ 볼은 나의 친구 볼만 있으면 난 외롭지 않아~슈웃~...</p>
+                                <hr />
+                                <div class="row rating-desc">
+                                    <div class="col-md-12">
+                                        <span class="glyphicon glyphicon-comment"></span>(50 Comments)
+                                        <span class="pull-right"><button class="btn btn-info" id="id_btn_detail">Detail</button></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="/assets/theme_expert/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+<ul id="comments-list" class="comments-list">
+    <li class="comment-list-sub">
+        <input style="width:100%; display: none; background-color: #FFAEC9;" type="text" id="id_comment_main_id" value="" />
+        <div class="comment-main-level">
+            <div class="row" style="margin:0;">
+                <div class="comment-box">
+                    <div class="comment-head">
+                        <div class="comment-thumb">
+                            <img src='/images/sana.png'>
+                        </div>
+                        <h6 class="comment-name by-author">Nickname</h6>
+                        <i class="fa fa-remove" id="id_remove"></i>
+                        <i class="fa fa-pencil-square-o" id="id_edit"></i>
+                        <i class="fa fa-reply" id="id_reply"></i>
+                        <button id="id_btn_reply_update" type="button" class="btn btn-default" style="display: none;">Update</button>
+                        <button id="id_btn_reply_cancel" type="button" class="btn btn-default" style="display: none;">Cancel</button>
+                    </div>
+                    <textarea id="id_comment_content" class="form-control" rows="" cols="" readonly>Empty</textarea>
+                    <textarea id="id_reply_edit" class="form-control" rows="" cols="" style="display: none;">
+                <!--//cacl textarea hegiht-->
+                </textarea>
+                </div>
+            </div>
+
+            <!--//reply textarea-->
+            <div class="row comment-list-reply" style="margin:0; display: none;">
+                <div class="input-group main_reply_textarea">
+                    <textarea id="id_reply_textarea" class="form-control" rows="3" cols="" style="resize: none" placeholder="내용을 입력하세요."></textarea>
+                    <span class="input-group-btn">
+                        <button id="id_reply_send_sub" type="button" class="btn btn-primary" style="height:74px">Send</button>
+                        </span>
+                </div>
+            </div>
+        </div>
+
+    </li>
+
+    <ul class="comments-list reply-list">
+        <li>
+            <input style="width:100%; display: none; background-color: #FFAEC9;" type="text" id="id_comment_sub_id" value="" />
+            <div class="comment-reply-level">
+                <div class="row" style="margin:0;">
+                    <div class="comment-box">
+                        <div class="comment-head">
+                            <i class="fa fa-reply fa-rotate-90 fa-left"></i>
+                            <div class="comment-thumb">
+                                <img src='/images/sana.png'>
+                            </div>
+                            <h6 class="comment-name">Lorena Rojero</h6>
+                            <i class="fa fa-remove" id="id_sub_remove"></i>
+                            <i class="fa fa-pencil" id="id_sub_edit"></i>
+                            <i class="fa fa-reply" id="id_sub_reply"></i>
+                        </div>
+                        <div class="comment-content">
+                            testComment
+                        </div>
+                    </div>
+                </div>
+                <!--//sub reply textarea-->
+                <div class="row comment-list-reply" style="margin:0; display: none;">
+                    <div class="input-group sub_reply_textarea">
+                        <textarea id="id_reply_textarea" class="form-control" rows="3" cols="" style="resize: none" placeholder="내용을 입력하세요."></textarea>
+                        <span class="input-group-btn">
+                            <button id="id_reply_send_sub" type="button" class="btn btn-primary" style="height:74px">Send</button>
+                            </span>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</ul>
